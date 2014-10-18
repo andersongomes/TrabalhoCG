@@ -42,7 +42,7 @@ void Vetor::showVetor(){
 void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     Vetor resultado1,resultado2;
     static int contador=1;
-    float produto, escalar;
+    float produto, escalar, produto2, escalar2;
     if(contador == 1){
         produto = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
         escalar = pow(sqrt(pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2)),2);
@@ -53,11 +53,13 @@ void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     }
     else{
         if(contador==2){
-            produto = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
+            produto = (v1.vetor[0]*v3.vetor[0] + v1.vetor[1]*v3.vetor[1] + v1.vetor[2]*v3.vetor[2]);
+            produto2 = (v2.vetor[0]*v3.vetor[0] + v2.vetor[1]*v3.vetor[1] + v2.vetor[2]*v3.vetor[2]);
             escalar = pow(sqrt(pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2)),2);
-            resultado2.vetor[0] = v2.vetor[0] - (produto/escalar)*v1.vetor[0];
-            resultado2.vetor[1] = v2.vetor[1] - (produto/escalar)*v1.vetor[1];
-            resultado2.vetor[2] = v2.vetor[2] - (produto/escalar)*v1.vetor[2];
+            escalar2 = pow(sqrt(pow(v2.vetor[0],2) + pow(v2.vetor[1],2) + pow(v2.vetor[2],2)),2);
+            resultado2.vetor[0] = v2.vetor[0] - ((produto/escalar)*v1.vetor[0]) - ((produto2/escalar2)*v2.vetor[0]);
+            resultado2.vetor[1] = v2.vetor[1] - ((produto/escalar)*v1.vetor[1]) - ((produto2/escalar2)*v2.vetor[0]);
+            resultado2.vetor[2] = v2.vetor[2] - ((produto/escalar)*v1.vetor[2]) - ((produto2/escalar2)*v2.vetor[0]);
         }
     }
     cout<<"v2:";
