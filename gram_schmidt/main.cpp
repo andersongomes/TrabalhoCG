@@ -84,5 +84,6 @@ int main()
     //vetor1.showVetor();
     //vetor2.showVetor();
     //vetor3.showVetor();
+    system("PAUSE");   
     return 0;
 }
