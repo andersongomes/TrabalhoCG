@@ -3,10 +3,12 @@
 #include <math.h> 
 #include <stdio.h>
 #include <Windows.h>
+#include "util.h"
+
 #include <iostream>
 
 using namespace std; 
- 
+   
 // The next global variable controls the animation's state and speed.
 float RotateAngle = 0.0f; // Angle in degrees of rotation around y-axis
 float Azimuth = 20.0; // Rotated up or down by this amount
@@ -16,6 +18,22 @@ const float AngleStepMin = 0.1f;
 int WireFrameOn = 1; // == 1 for wire frame mode
 GLUquadricObj* myReusableQuadric = 0;
  
+//Variáveis Globais 
+//Vetor 1
+float _xx1 = 0; 
+float _yy1 = 0;
+float _zz1 = 0;
+
+//Vetor 2
+float _xx2 = 0; 
+float _yy2 = 0;
+float _zz2 = 0;
+
+//Vetor 3
+float _xx3 = 0; 
+float _yy3 = 0;
+float _zz3 = 0; 
+
 void drawGluSlantCylinder(double height, double radiusBase, double radiusTop, int slices, int stacks) {
     if (!myReusableQuadric) {
         myReusableQuadric = gluNewQuadric();
@@ -113,27 +131,6 @@ void mySpecialKeyFunc(int key, int x, int y) {
     glutPostRedisplay();
 }
  
-// Desenha a splash screen 
-void drawSplashScreen(void) {
-    // Clear the rendering window
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glColor3f (1.0, 1.0, 1.0);
-    // Draw white polygon (rectangle) with
-    // corners at (0.25, 0.25, 0.0)
-    // and (0.75, 0.75, 0.0)
-    glBegin(GL_POLYGON);
-    glVertex3f (0.25, 0.25, 0.0);
-    glVertex3f (0.75, 0.25, 0.0);
-    glVertex3f (0.75, 0.75, 0.0);
-    glVertex3f (0.25, 0.75, 0.0);
-    glEnd();
-    // Don't wait!
-    // Start processing buffered routines
-    glFlush ();    
-    glutSwapBuffers();     
-} 
-
- 
 /*
 * drawScene() handles the animation and the redrawing of the
 * graphics window contents.
@@ -165,9 +162,7 @@ void drawScene(void) {
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
     glPopMatrix();
  
- 
     // Segundo Vetor
- 
     glTranslatef(1.5, 0.0, 0.0);
     glRotatef(-45.0, 1.0, 0.0, 0.0);
     glColor3f(1.5, 1.2, 0.2); // Amarelo
@@ -183,9 +178,7 @@ void drawScene(void) {
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
     glPopMatrix();
  
- 
     // Terceiro Vetor
- 
     glTranslatef(0.0, 0.0, 0.0);
     glRotatef(-75.0, 0.0, 10.0, 0.0);
     glColor3f(0.0, 0.2, 0.7); // Amarelo
@@ -251,10 +244,52 @@ void resizeWindow(int w, int h) {
     gluPerspective(15.0, aspectRatio, 25.0, 45.0);
 }
  
+void readParameters(){ 
+    int i = 1;
+    float x, y, z;
+    FILE *entrada;
+    
+    //r = read , w = write
+    entrada = fopen("in.txt", "r");
+    
+    if(entrada == NULL){
+        printf("Houve um problema ao tentar abrir o arquivo!");
+    } else {
+        while(fscanf(entrada ,"%f %f %f", &x ,&y, &z) != EOF){
+            if(i == 1){
+                _xx1 = x;
+                _yy1 = y;
+                _zz1 = z;
+            }
+            if(i == 2){
+                _xx2 = x;
+                _yy2 = y;
+                _zz2 = z;
+            }
+            if(i == 3){
+                _xx3 = x;
+                _yy3 = y;
+                _zz3 = z;
+            }
+            i++;                 
+        }
+    }
+    
+    fclose(entrada); 
+}
+
 // Main routine
 // Set up OpenGL, define the callbacks and start the main loop
 int main(int argc, char** argv) {
     
+    readParameters();
+    
+    //Imprimi os parâmetros dos vetores
+    FILE *saida;
+    saida = fopen("out.txt", "w");
+    if(saida != NULL){
+        fprintf(saida, "%f %f %f %f %f %f %f %f %f", _xx1, _yy1, _zz1, _xx2, _yy2, _zz2, _xx3, _yy3, _zz3);
+    }
     
     glutInit(&argc, argv);
     // We're going to animate it, so double buffer
@@ -283,7 +318,7 @@ int main(int argc, char** argv) {
     // Call this for background processing
     // glutIdleFunc( myIdleFunction );
     // call this whenever window needs redrawing
-    //glutDisplayFunc(drawSplashScreen);
+
     glutDisplayFunc(drawScene);
     
     
@@ -292,5 +327,6 @@ int main(int argc, char** argv) {
     fprintf(stdout, "Press \"R\" or \"r\" to increase or decrease rate of movement (respectively).n");
     // Start the main loop. glutMainLoop never returns.
     glutMainLoop();
+
     return(0); // This line is never reached.
 }
