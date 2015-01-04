@@ -1,8 +1,8 @@
+#include <Windows.h>
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <math.h> 
 #include <stdio.h>
-#include <Windows.h>
 #include "util.h"
 
 #include <iostream>
@@ -138,6 +138,16 @@ void mySpecialKeyFunc(int key, int x, int y) {
 void drawScene(void) {
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Add ambient light
+    GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+
+    // Add positioned light
+    GLfloat lightColor0[] = {0.8f, 0.8f, 0.8f, 1.0f}; //Color (0.5, 0.5, 0.5)
+    GLfloat lightPos0[] = {4.0f, 0.0f, 8.0f, 0.2f}; //Positioned at (4, 0, 8)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
     
     // Rotate the image
     glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
@@ -204,6 +214,11 @@ void initRendering() {
     glEnable(GL_DEPTH_TEST); // Depth testing must be turned on
     glCullFace(GL_BACK);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes at first
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_NORMALIZE);
 }
   
 void menu(int item) {
@@ -322,9 +337,9 @@ int main(int argc, char** argv) {
     glutDisplayFunc(drawScene);
     
     
-    fprintf(stdout, "Arrow keys control viewpoint.n");
-    fprintf(stdout, "Press \"w\" to toggle wireframe mode.n");
-    fprintf(stdout, "Press \"R\" or \"r\" to increase or decrease rate of movement (respectively).n");
+    fprintf(stdout, "Use as setas no teclado para rotacioanr.n");
+    fprintf(stdout, "Aperte \"w\" para ativar o modo solido.n");
+    fprintf(stdout, "Aperte \"R\" ou \"r\" para aumentar ou diminuir a taxa de velocidade.n");
     // Start the main loop. glutMainLoop never returns.
     glutMainLoop();
 
