@@ -1,7 +1,7 @@
 [Project]
 FileName=interface.dev
 Name=interface
-UnitCount=2
+UnitCount=4
 Type=0
 Ver=1
 ObjFiles=
@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=../../lib/libopengl32.a_@@_../../lib/libglu32.a_@@_../../lib/libglut32.a_@@_
+Linker=-lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32_@@_
 IsCpp=1
 Icon=
 ExeOutput=
@@ -156,6 +156,26 @@ BuildCmd=
 
 [Unit2]
 FileName=util.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit3]
+FileName=vetor.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit4]
+FileName=vetor.cpp
 CompileCpp=1
 Folder=
 Compile=1

@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "util.h"
 
+#include "vetor.h"
+
 #include <iostream>
 
 using namespace std; 
@@ -33,6 +35,40 @@ float _zz2 = 0;
 float _xx3 = 0; 
 float _yy3 = 0;
 float _zz3 = 0; 
+
+//Métodos de execução de Gram Schimit
+
+void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
+    Vetor resultado1,resultado2;
+    static int contador=1;
+    float produto, escalar, produto2, escalar2;
+    if(contador == 1){
+        produto = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
+        escalar = pow(sqrt(pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2)),2);
+        resultado1.inicializaVetor(v2.vetor[0] - (produto/escalar)*v1.vetor[0], v2.vetor[1] - (produto/escalar)*v1.vetor[1], v2.vetor[2] - (produto/escalar)*v1.vetor[2]);
+        contador++;
+    }
+    else{
+        if(contador==2){
+            produto = (v1.vetor[0]*v3.vetor[0] + v1.vetor[1]*v3.vetor[1] + v1.vetor[2]*v3.vetor[2]);
+            produto2 = (v2.vetor[0]*v3.vetor[0] + v2.vetor[1]*v3.vetor[1] + v2.vetor[2]*v3.vetor[2]);
+            escalar = pow(sqrt(pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2)),2);
+            escalar2 = pow(sqrt(pow(v2.vetor[0],2) + pow(v2.vetor[1],2) + pow(v2.vetor[2],2)),2);
+            resultado2.inicializaVetor(v2.vetor[0] - ((produto/escalar)*v1.vetor[0]) - ((produto2/escalar2)*v2.vetor[0]), v2.vetor[1] - ((produto/escalar)*v1.vetor[1]) - ((produto2/escalar2)*v2.vetor[0]), v2.vetor[2] - ((produto/escalar)*v1.vetor[2]) - ((produto2/escalar2)*v2.vetor[0]));
+        }
+    }
+    cout<<"v2:";
+    resultado1.showVetor(2);
+    cout<<"v3:";
+    resultado2.showVetor(3);
+}
+
+void inicializacaoGramSchimidt(Vetor v1,Vetor v2,Vetor v3){
+    cout<<"v1:";
+    v1.showVetor(1);
+    gramSchimidt(v1,v2,v3);
+}
+
 
 void drawGluSlantCylinder(double height, double radiusBase, double radiusTop, int slices, int stacks) {
     if (!myReusableQuadric) {
@@ -213,7 +249,7 @@ void drawScene(void) {
 void initRendering() {
     glEnable(GL_DEPTH_TEST); // Depth testing must be turned on
     glCullFace(GL_BACK);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes at first
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Just show wireframes at first
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
@@ -298,14 +334,24 @@ void readParameters(){
 int main(int argc, char** argv) {
     
     readParameters();
+
+    Vetor vetor1, vetor2, vetor3;
+
+    vetor1.inicializaVetor(_xx1, _yy1, _zz1);
+    vetor2.inicializaVetor(_xx2, _yy2, _zz2);
+    vetor3.inicializaVetor(_xx3, _yy3, _zz3);
     
+    inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
+
+
     //Imprimi os parâmetros dos vetores
     FILE *saida;
     saida = fopen("out.txt", "w");
     if(saida != NULL){
         fprintf(saida, "%f %f %f %f %f %f %f %f %f", _xx1, _yy1, _zz1, _xx2, _yy2, _zz2, _xx3, _yy3, _zz3);
     }
-    
+    fclose(saida);
+
     glutInit(&argc, argv);
     // We're going to animate it, so double buffer
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -342,6 +388,6 @@ int main(int argc, char** argv) {
     fprintf(stdout, "Aperte \"R\" ou \"r\" para aumentar ou diminuir a taxa de velocidade.n");
     // Start the main loop. glutMainLoop never returns.
     glutMainLoop();
-
+    
     return(0); // This line is never reached.
 }
