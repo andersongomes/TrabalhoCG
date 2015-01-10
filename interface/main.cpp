@@ -248,7 +248,6 @@ void drawScene(void) {
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    drawAxis();
 
     // Add ambient light
     GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
@@ -315,9 +314,13 @@ void drawScene(void) {
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
     glPopMatrix();  
  
+    //Chamada da função que desenha os eixos x,y,z
+    drawAxis();
+
     // Flush the pipeline, swap the buffers
     glFlush();
     glutSwapBuffers();
+    
 }
  
 // Initialize OpenGL's rendering modes
