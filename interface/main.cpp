@@ -166,7 +166,80 @@ void mySpecialKeyFunc(int key, int x, int y) {
     }
     glutPostRedisplay();
 }
+
+void output(float x, float y, char *string)
+{
+  int len, i;
+  glRasterPos2f(x, y);
+  len = (int) strlen(string);
+  for (i = 0; i < len; i++)
+  {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
+  }
+}
  
+// Draw the lines (x,y,z)
+void drawAxis(void) { 
+    glPushMatrix();     // It is important to push the Matrix before calling 
+
+    // Draw the positive side of the lines x,y,z
+    glBegin(GL_LINES);
+        glColor3f (0.0, 1.0, 0.0); // Green for x axis
+        glVertex3f(0,0,0);
+        glVertex3f(5,0,0);
+        glColor3f(1.0,0.0,0.0); // Red for y axis
+        glVertex3f(0,0,0);
+        glVertex3f(0,5,0);
+        glColor3f(0.0,0.0,1.0); // Blue for z axis
+        glVertex3f(0,0,0); 
+        glVertex3f(0,0,5);
+    glEnd();
+
+    // Dotted lines for the negative sides of x,y,z
+    glEnable(GL_LINE_STIPPLE);  // Enable line stipple to use a 
+                // dotted pattern for the lines
+    glLineStipple(1, 0x0101);   // Dotted stipple pattern for the lines
+    glBegin(GL_LINES); 
+        glColor3f (0.0, 1.0, 0.0);  // Green for x axis
+        glVertex3f(-5,0,0);
+        glVertex3f(0,0,0);
+        glColor3f(1.0,0.0,0.0);     // Red for y axis
+        glVertex3f(0,0,0);
+        glVertex3f(0,-5,0);
+        glColor3f(0.0,0.0,1.0);     // Blue for z axis
+        glVertex3f(0,0,0);
+        glVertex3f(0,0,-10);
+    glEnd();
+    glDisable(GL_LINE_STIPPLE);     // Disable the line stipple
+    glPopMatrix();      // Don't forget to pop the Matrix
+
+    //desenha os cones nos eixos
+	glColor3f( 0.0f, 1.0f, 0.0f);
+	glPushMatrix();
+		glTranslatef(5, 0, 0);
+		output(0.4, 0, "X");
+		glRotatef(90, 0, 1, 0);
+		glutSolidCone(0.10f, 0.3f, 20, 20);
+	glPopMatrix();
+
+	glColor3f( 1.0f, 0.0f, 0.0f);
+	glPushMatrix();
+		glTranslatef(0, 5, 0);
+		output(0, 0.4, "Y");
+		glRotatef(270, 1, 0, 0);
+		glutSolidCone(0.10f, 0.3f, 20, 20);
+	glPopMatrix();
+
+	glColor3f( 0.0f, 0.0f, 1.0f);
+	glPushMatrix();
+		glTranslatef(0, 0, 5);
+		glutSolidCone(0.10f, 0.3f, 20, 20);
+		glTranslatef(0, 0, 1.25);
+		output(0, 0, "Z");
+	glPopMatrix();
+
+}
+
 /*
 * drawScene() handles the animation and the redrawing of the
 * graphics window contents.
@@ -174,6 +247,8 @@ void mySpecialKeyFunc(int key, int x, int y) {
 void drawScene(void) {
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    drawAxis();
 
     // Add ambient light
     GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
