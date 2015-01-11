@@ -44,6 +44,10 @@ float _xx3 = 0;
 float _yy3 = 0;
 float _zz3 = 0; 
 
+// Zoom in e out
+double rotate_by_key = 0; 
+double rotate_x = 1.0; 
+
 //Métodos de execução de Gram Schimit
 
 void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
@@ -205,6 +209,12 @@ void drawScene(void) {
     // Rotate the image
     glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
     glLoadIdentity(); // Initialize to the identity
+
+    // Zoom da camera
+    glScalef(rotate_x, rotate_x, 1.0f); 
+    //glScalef(1.0f, 1.0f, rotate_x); 
+    glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
+
     glTranslatef(-1.5, 0.0, -35.0); // Translate from origin (in front of viewer)
     glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
     glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
@@ -380,29 +390,37 @@ void readParameters(){
 void myKeyboardFunc(unsigned char key, int x, int y) {
     switch (key) {
         case 'w':
-        WireFrameOn = 1 - WireFrameOn;
-        if (WireFrameOn) {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes
-        }
-        else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Show solid polygons
-        }
-        glutPostRedisplay();
-        break;
+            WireFrameOn = 1 - WireFrameOn;
+            if (WireFrameOn) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes
+            }
+            else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Show solid polygons
+            }
+            glutPostRedisplay();
+            break;
         case 'R':
-        AngleStepSize *= 1.5;
-        if (AngleStepSize>AngleStepMax) {
-            AngleStepSize = AngleStepMax;
-        }
-        break;
+            AngleStepSize *= 1.5;
+            if (AngleStepSize>AngleStepMax) {
+                AngleStepSize = AngleStepMax;
+            }
+            break;
         case 'r':
-        AngleStepSize /= 1.5;
-        if (AngleStepSize<AngleStepMin) {
-            AngleStepSize = AngleStepMin;
-        }
-        break;
+            AngleStepSize /= 1.5;
+            if (AngleStepSize<AngleStepMin) {
+                AngleStepSize = AngleStepMin;
+            }
+            break;
+        case 'g':
+             rotate_x += .05; 
+             glutPostRedisplay();
+             break;
+        case 'b':
+             rotate_x -= .05;
+             glutPostRedisplay();
+             break;
         case 27: // Escape key
-        exit(1);
+            exit(1);
     }
 }
 
