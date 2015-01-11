@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include <windows.h>
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <math.h> 
@@ -21,6 +21,14 @@ int WireFrameOn = 1; // == 1 for wire frame mode
 GLUquadricObj* myReusableQuadric = 0;
  
 //Variáveis Globais 
+
+float heightCilindro = 3.0;
+float heightCone = 3.0;
+float heightCone2 = 3.0;
+float rotateAngle2 = -90;
+float posCone = 0.0;
+float corretor = 0.01;
+
 //Vetor 1
 float _xx1 = 0; 
 float _yy1 = 0;
@@ -69,7 +77,6 @@ void inicializacaoGramSchimidt(Vetor v1,Vetor v2,Vetor v3){
     gramSchimidt(v1,v2,v3);
 }
 
-
 void drawGluSlantCylinder(double height, double radiusBase, double radiusTop, int slices, int stacks) {
     if (!myReusableQuadric) {
         myReusableQuadric = gluNewQuadric();
@@ -102,70 +109,7 @@ void drawGluSlantCylinderWithCaps(double height, double radiusBase, double radiu
 void drawGluCylinderWithCaps(double height, double radius, int slices, int stacks) {
     drawGluSlantCylinderWithCaps(height, radius, radius, slices, stacks);
 }
- 
-// glutKeyboardFunc is called below to set this function to handle
-// all "normal" key presses.
-void myKeyboardFunc(unsigned char key, int x, int y) {
-    switch (key) {
-        case 'w':
-        WireFrameOn = 1 - WireFrameOn;
-        if (WireFrameOn) {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes
-        }
-        else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Show solid polygons
-        }
-        glutPostRedisplay();
-        break;
-        case 'R':
-        AngleStepSize *= 1.5;
-        if (AngleStepSize>AngleStepMax) {
-            AngleStepSize = AngleStepMax;
-        }
-        break;
-        case 'r':
-        AngleStepSize /= 1.5;
-        if (AngleStepSize<AngleStepMin) {
-            AngleStepSize = AngleStepMin;
-        }
-        break;
-        case 27: // Escape key
-        exit(1);
-    }
-}
- 
-// glutSpecialFunc is called below to set this function to handle
-// all "special" key presses. See glut.h for the names of
-// special keys.
-void mySpecialKeyFunc(int key, int x, int y) {
-    switch (key) {
-        case GLUT_KEY_UP:
-        Azimuth += AngleStepSize;
-        if (Azimuth>180.0f) {
-            Azimuth -= 360.0f;
-        }
-        break;
-        case GLUT_KEY_DOWN:
-        Azimuth -= AngleStepSize;
-        if (Azimuth < -360.0f) {
-            Azimuth += -360.0f;
-        }
-        break;
-        case GLUT_KEY_LEFT:
-        RotateAngle += AngleStepSize;
-        if (RotateAngle > 180.0f) {
-            RotateAngle -= 360.0f;
-        }
-        break;
-        case GLUT_KEY_RIGHT:
-        RotateAngle -= AngleStepSize;
-        if (RotateAngle < -180.0f) {
-            RotateAngle += 360.0f;
-        }
-        break;
-    }
-    glutPostRedisplay();
-}
+
 
 void output(float x, float y, char *string)
 {
@@ -248,7 +192,6 @@ void drawScene(void) {
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     // Add ambient light
     GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
@@ -262,21 +205,21 @@ void drawScene(void) {
     // Rotate the image
     glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
     glLoadIdentity(); // Initialize to the identity
-    glTranslatef(-0.5, 0.0, -35.0); // Translate from origin (in front of viewer)
+    glTranslatef(-1.5, 0.0, -35.0); // Translate from origin (in front of viewer)
     glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
     glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
     glDisable(GL_CULL_FACE);
     glPushMatrix();
     glTranslatef(1.5, 0.0, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
+    glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
     glColor3f(1.0, 0.4, 0.2); // Reddish color
     // Parameters: height, radius, slices, stacks
-    drawGluCylinder(3.0, 0.1, 10, 10);
+    drawGluCylinder(heightCilindro, 0.1, 10, 10);
     glPopMatrix();
     glEnable(GL_CULL_FACE);
     glPushMatrix();
-    glTranslatef(1.5, 3.0, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
+    glTranslatef(1.5, heightCone2, posCone);
+    glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
     glColor3f(0.2, 1.0, 0.2); // Greenish color
     // Parameters: height, base radius, top radius, slices, stacks
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
@@ -287,11 +230,11 @@ void drawScene(void) {
     glRotatef(-45.0, 1.0, 0.0, 0.0);
     glColor3f(1.5, 1.2, 0.2); // Amarelo
     // Parameters: height, radius, slices, stacks
-    drawGluCylinder(3.0, 0.1, 10, 10);
+    drawGluCylinder(heightCilindro, 0.1, 10, 10);
     glPopMatrix();
     glEnable(GL_CULL_FACE);
     glPushMatrix();
-    glTranslatef(0.0, 0.0, 3.0);
+    glTranslatef(0.0, 0.0, heightCone);
     glRotatef(0.0, 1.0, 0.0, 0.0);
     glColor3f(0.2, 1.0, 0.2); // Greenish color
     // Parameters: height, base radius, top radius, slices, stacks
@@ -303,11 +246,11 @@ void drawScene(void) {
     glRotatef(-75.0, 0.0, 10.0, 0.0);
     glColor3f(0.0, 0.2, 0.7); // Amarelo
     // Parameters: height, radius, slices, stacks
-    drawGluCylinder(3.0, 0.1, 10, 10);
+    drawGluCylinder(heightCilindro, 0.1, 10, 10);
     glPopMatrix();
     glEnable(GL_CULL_FACE);
     glPushMatrix();
-    glTranslatef(0.0, 0.0, 3.0);
+    glTranslatef(0.0, 0.0, heightCone);
     glRotatef(0.0, 1.0, 0.0, 0.0);
     glColor3f(0.2, 1.0, 0.2); // Greenish color
     // Parameters: height, base radius, top radius, slices, stacks
@@ -323,6 +266,30 @@ void drawScene(void) {
     
 }
  
+void reduzVetor(void) {
+     heightCilindro -= 1.0;
+     heightCone -= 1.0; 
+}
+
+void aumentaVetor(void) {
+     heightCilindro += 1.0;
+     heightCone += 1.0; 
+}
+
+void afastaVetor(void) {
+    heightCone2 += -0.04 - corretor;  
+    rotateAngle2 += 5;
+    posCone += 0.25;
+    corretor += 0.01;
+}
+
+void afastaVetor2(void) {
+    heightCone2 += 0.04 + corretor;
+    rotateAngle2 -= 5;
+    posCone -= 0.25;
+    corretor += 0.01;
+}
+
 // Initialize OpenGL's rendering modes
 void initRendering() {
     glEnable(GL_DEPTH_TEST); // Depth testing must be turned on
@@ -405,6 +372,91 @@ void readParameters(){
     }
     
     fclose(entrada); 
+}
+
+ 
+// glutKeyboardFunc is called below to set this function to handle
+// all "normal" key presses.
+void myKeyboardFunc(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'w':
+        WireFrameOn = 1 - WireFrameOn;
+        if (WireFrameOn) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes
+        }
+        else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Show solid polygons
+        }
+        glutPostRedisplay();
+        break;
+        case 'R':
+        AngleStepSize *= 1.5;
+        if (AngleStepSize>AngleStepMax) {
+            AngleStepSize = AngleStepMax;
+        }
+        break;
+        case 'r':
+        AngleStepSize /= 1.5;
+        if (AngleStepSize<AngleStepMin) {
+            AngleStepSize = AngleStepMin;
+        }
+        break;
+        case 27: // Escape key
+        exit(1);
+    }
+}
+
+// glutSpecialFunc is called below to set this function to handle
+// all "special" key presses. See glut.h for the names of
+// special keys.
+void mySpecialKeyFunc(int key, int x, int y) {
+    switch (key) {
+        case GLUT_KEY_UP:
+        Azimuth += AngleStepSize;
+        if (Azimuth>180.0f) {
+            Azimuth -= 360.0f;
+        }
+        break;
+        case GLUT_KEY_DOWN:
+        Azimuth -= AngleStepSize;
+        if (Azimuth < -360.0f) {
+            Azimuth += -360.0f;
+        }
+        break;
+        case GLUT_KEY_LEFT:
+        RotateAngle += AngleStepSize;
+        if (RotateAngle > 180.0f) {
+            RotateAngle -= 360.0f;
+        }
+        break;
+        case GLUT_KEY_RIGHT:
+        RotateAngle -= AngleStepSize;
+        if (RotateAngle < -180.0f) {
+            RotateAngle += 360.0f;
+        }
+        break;
+        //Diminui o Tamanho do vetor
+        case GLUT_KEY_F1:
+            reduzVetor(); 
+            Sleep(500);
+        break;
+        //Aumenta o Tamanho do vetor
+        case GLUT_KEY_F2:
+            aumentaVetor(); 
+            Sleep(500);
+        break;
+        //Rotaciona um vetor específico
+        case GLUT_KEY_F3:
+            afastaVetor(); 
+            Sleep(500);
+        break;
+        case GLUT_KEY_F4:
+            afastaVetor2(); 
+            Sleep(500);
+        break;
+    }
+    
+    glutPostRedisplay();
 }
 
 // Main routine
