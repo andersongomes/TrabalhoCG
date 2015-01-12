@@ -279,11 +279,13 @@ void drawScene(void) {
 void reduzVetor(void) {
      heightCilindro -= 1.0;
      heightCone -= 1.0; 
+     heightCone2 -= 1.0;
 }
 
 void aumentaVetor(void) {
      heightCilindro += 1.0;
      heightCone += 1.0; 
+     heightCone2 += 1.0;
 }
 
 void afastaVetor(void) {
