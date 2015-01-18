@@ -41,27 +41,33 @@ void Vetor::showVetor(){
 
 void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     Vetor resultado1,resultado2;
-    static int contador=1;
-    float produto, escalar, produto2, escalar2;
-    if(contador == 1){
-        produto = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
-        escalar = pow(sqrt(pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2)),2);
-        resultado1.vetor[0] = v2.vetor[0] - (produto/escalar)*v1.vetor[0];
-        resultado1.vetor[1] = v2.vetor[1] - (produto/escalar)*v1.vetor[1];
-        resultado1.vetor[2] = v2.vetor[2] - (produto/escalar)*v1.vetor[2];
-        contador++;
-    }
-    else{
-        if(contador==2){
-            produto = (v1.vetor[0]*v3.vetor[0] + v1.vetor[1]*v3.vetor[1] + v1.vetor[2]*v3.vetor[2]);
-            produto2 = (v2.vetor[0]*v3.vetor[0] + v2.vetor[1]*v3.vetor[1] + v2.vetor[2]*v3.vetor[2]);
-            escalar = pow(sqrt(pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2)),2);
-            escalar2 = pow(sqrt(pow(v2.vetor[0],2) + pow(v2.vetor[1],2) + pow(v2.vetor[2],2)),2);
-            resultado2.vetor[0] = v2.vetor[0] - ((produto/escalar)*v1.vetor[0]) - ((produto2/escalar2)*v2.vetor[0]);
-            resultado2.vetor[1] = v2.vetor[1] - ((produto/escalar)*v1.vetor[1]) - ((produto2/escalar2)*v2.vetor[0]);
-            resultado2.vetor[2] = v2.vetor[2] - ((produto/escalar)*v1.vetor[2]) - ((produto2/escalar2)*v2.vetor[0]);
-        }
-    }
+    float numerador, numerador2,denominador, denominador2,aux1,aux2,aux3;;
+    /* DESCOBRINDO O W2*/
+    numerador = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
+    denominador = pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2);
+    resultado1.vetor[0] = v2.vetor[0] - ((numerador/denominador)*v1.vetor[0]);
+    resultado1.vetor[1] = v2.vetor[1] - ((numerador/denominador)*v1.vetor[1]);
+    resultado1.vetor[2] = v2.vetor[2] - ((numerador/denominador)*v1.vetor[2]);
+    /* FIM DO W2 */
+
+    /* DESCOBRINDO O W3*/
+    numerador = (resultado1.vetor[0]*v3.vetor[0] + resultado1.vetor[1]*v3.vetor[1] + resultado1.vetor[2]*v3.vetor[2]);
+    numerador2 = (v1.vetor[0]*v3.vetor[0] + v1.vetor[1]*v3.vetor[1] + v1.vetor[2]*v3.vetor[2]);
+    denominador = pow(resultado1.vetor[0],2) + pow(resultado1.vetor[1],2) + pow(resultado1.vetor[2],2);
+    denominador2 = pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2);
+    aux1 = v3.vetor[0];
+    aux2 = (numerador/denominador)*resultado1.vetor[0];
+    aux3 = (numerador2/denominador2)*v1.vetor[0];
+    resultado2.vetor[0] = aux1-aux2-aux3;
+    aux1 = v3.vetor[1];
+    aux2 = (numerador/denominador)*resultado1.vetor[1];
+    aux3 = (numerador2/denominador2)*v1.vetor[1];
+    resultado2.vetor[1] = aux1-aux2-aux3;
+    aux1 = v3.vetor[2];
+    aux2 = (numerador/denominador)*resultado1.vetor[2];
+    aux3 = (numerador2/denominador2)*v1.vetor[2];
+    resultado2.vetor[2] = aux1-aux2-aux3;
+    /* FIM DO W3*/
     cout<<"v2:";
     resultado1.showVetor();
     cout<<"v3:";
@@ -84,6 +90,6 @@ int main()
     //vetor1.showVetor();
     //vetor2.showVetor();
     //vetor3.showVetor();
-    system("PAUSE");   
+    //system("PAUSE");
     return 0;
 }
