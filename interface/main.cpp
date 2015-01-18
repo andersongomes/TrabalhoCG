@@ -80,9 +80,9 @@ void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     resultado2.vetor[2] = aux1-aux2-aux3;
     /* FIM DO W3*/
     cout<<"v2:";
-    resultado1.showVetor();
+    resultado1.showVetor(2);
     cout<<"v3:";
-    resultado2.showVetor();
+    resultado2.showVetor(3);
 }
 
 void inicializacaoGramSchimidt(Vetor v1,Vetor v2,Vetor v3){
