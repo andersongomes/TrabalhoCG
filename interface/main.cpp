@@ -240,7 +240,7 @@ void drawScene(void) {
     glPushMatrix();
     glTranslatef(1.5, heightCone2, posCone);
     glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
-    glColor3f(0.2, 1.0, 0.2); // Greenish color
+    glColor3f(1.0, 0.4, 0.2); // Reddish color
     // Parameters: height, base radius, top radius, slices, stacks
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
     glPopMatrix();
@@ -256,7 +256,7 @@ void drawScene(void) {
     glPushMatrix();
     glTranslatef(0.0, 0.0, heightCone);
     glRotatef(0.0, 1.0, 0.0, 0.0);
-    glColor3f(0.2, 1.0, 0.2); // Greenish color
+    glColor3f(1.5, 1.2, 0.2); // Amarelo
     // Parameters: height, base radius, top radius, slices, stacks
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
     glPopMatrix();
@@ -264,7 +264,7 @@ void drawScene(void) {
     // Terceiro Vetor
     glTranslatef(0.0, 0.0, 0.0);
     glRotatef(-75.0, 0.0, 10.0, 0.0);
-    glColor3f(0.0, 0.2, 0.7); // Amarelo
+    glColor3f(0.0, 0.2, 0.7); // Azul
     // Parameters: height, radius, slices, stacks
     drawGluCylinder(heightCilindro, 0.1, 10, 10);
     glPopMatrix();
@@ -272,7 +272,7 @@ void drawScene(void) {
     glPushMatrix();
     glTranslatef(0.0, 0.0, heightCone);
     glRotatef(0.0, 1.0, 0.0, 0.0);
-    glColor3f(0.2, 1.0, 0.2); // Greenish color
+    glColor3f(0.0, 0.2, 0.7); // Azul
     // Parameters: height, base radius, top radius, slices, stacks
     drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
     glPopMatrix();  
@@ -310,6 +310,37 @@ void afastaVetor2(void) {
     rotateAngle2 -= 5;
     posCone -= 0.25;
     corretor += 0.01;
+}
+
+void sizeUp(int value) {
+     if(heightCilindro <= value){
+         heightCilindro += 0.1;
+         heightCone += 0.1; 
+         heightCone2 += 0.1;
+         glutPostRedisplay();
+         glutTimerFunc(100, sizeUp, value);
+     }    
+}
+
+void sizeDown(int value) {
+     if(heightCilindro >= value){
+         heightCilindro -= 0.1;
+         heightCone -= 0.1; 
+         heightCone2 -= 0.1;
+         glutPostRedisplay();
+         glutTimerFunc(100, sizeDown, value);
+     }    
+}
+
+void rotationRight(int value){
+     if(rotateAngle2 < value){
+         heightCone2 += -0.04 - corretor;  
+         rotateAngle2 += 5;
+         posCone += 0.25;
+         corretor += 0.01;
+         glutPostRedisplay();
+         glutTimerFunc(100, rotationRight, value);
+     }             
 }
 
 // Initialize OpenGL's rendering modes
@@ -483,6 +514,15 @@ void mySpecialKeyFunc(int key, int x, int y) {
         case GLUT_KEY_F4:
             afastaVetor2(); 
             Sleep(500);
+        break;
+        case GLUT_KEY_F5:
+            sizeUp(3);
+        break;
+        case GLUT_KEY_F6:
+            sizeDown(1);
+        break;
+        case GLUT_KEY_F7:
+            rotationRight(-70);
         break;
     }
     
