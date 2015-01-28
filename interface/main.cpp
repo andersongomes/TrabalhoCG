@@ -229,52 +229,59 @@ void drawScene(void) {
     glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
     glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
     glDisable(GL_CULL_FACE);
+
+    // Primeiro vetor
     glPushMatrix();
-    glTranslatef(1.5, 0.0, 0.0);
-    glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
-    glColor3f(1.0, 0.4, 0.2); // Reddish color
-    // Parameters: height, radius, slices, stacks
-    drawGluCylinder(heightCilindro, 0.1, 10, 10);
-    glPopMatrix();
-    glEnable(GL_CULL_FACE);
-    glPushMatrix();
-    glTranslatef(1.5, heightCone2, posCone);
-    glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
-    glColor3f(1.0, 0.4, 0.2); // Reddish color
-    // Parameters: height, base radius, top radius, slices, stacks
-    drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
+        // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
+        // Elemento unido -> Cilindro + Cone
+        glPushMatrix();
+            glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
+            glColor3f(1.0, 0.4, 0.2); // Reddish color
+            // Parameters: height, radius, slices, stacks
+            drawGluCylinder(heightCilindro, 0.1, 10, 10);
+            glEnable(GL_CULL_FACE);
+            glTranslatef(0.0, 0.0, heightCone2);
+            glRotatef(0.0, 1.0, 0.0, 0.0);
+            glColor3f(1.0, 0.4, 0.2); // Reddish color
+            // Parameters: height, base radius, top radius, slices, stacks
+            drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
+        glPopMatrix();
     glPopMatrix();
  
     // Segundo Vetor
-    glTranslatef(1.5, 0.0, 0.0);
-    glRotatef(-45.0, 1.0, 0.0, 0.0);
-    glColor3f(1.5, 1.2, 0.2); // Amarelo
-    // Parameters: height, radius, slices, stacks
-    drawGluCylinder(heightCilindro, 0.1, 10, 10);
-    glPopMatrix();
-    glEnable(GL_CULL_FACE);
     glPushMatrix();
-    glTranslatef(0.0, 0.0, heightCone);
-    glRotatef(0.0, 1.0, 0.0, 0.0);
-    glColor3f(1.5, 1.2, 0.2); // Amarelo
-    // Parameters: height, base radius, top radius, slices, stacks
-    drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
+        // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
+        // Elemento unido -> Cilindro + Cone
+        glPushMatrix();
+            glRotatef(-45.0, 1.0, 0.0, 0.0);
+            glColor3f(1.5, 1.2, 0.2); // Amarelo
+            // Parameters: height, radius, slices, stacks
+            drawGluCylinder(heightCilindro, 0.1, 10, 10);
+            glEnable(GL_CULL_FACE);
+            glTranslatef(0.0, 0.0, heightCone);
+            glRotatef(0.0, 1.0, 0.0, 0.0);
+            glColor3f(1.5, 1.2, 0.2); // Amarelo
+            // Parameters: height, base radius, top radius, slices, stacks
+            drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
+        glPopMatrix();
     glPopMatrix();
  
     // Terceiro Vetor
-    glTranslatef(0.0, 0.0, 0.0);
-    glRotatef(-75.0, 0.0, 10.0, 0.0);
-    glColor3f(0.0, 0.2, 0.7); // Azul
-    // Parameters: height, radius, slices, stacks
-    drawGluCylinder(heightCilindro, 0.1, 10, 10);
-    glPopMatrix();
-    glEnable(GL_CULL_FACE);
     glPushMatrix();
-    glTranslatef(0.0, 0.0, heightCone);
-    glRotatef(0.0, 1.0, 0.0, 0.0);
-    glColor3f(0.0, 0.2, 0.7); // Azul
-    // Parameters: height, base radius, top radius, slices, stacks
-    drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
+        // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
+        // Elemento unido -> Cilindro + Cone
+        glPushMatrix();
+            glRotatef(-75.0, 0.0, 10.0, 0.0);
+            glColor3f(0.0, 0.2, 0.7); // Azul
+            // Parameters: height, radius, slices, stacks
+            drawGluCylinder(heightCilindro, 0.1, 10, 10);
+            glEnable(GL_CULL_FACE);
+            glTranslatef(0.0, 0.0, heightCone);
+            glRotatef(0.0, 1.0, 0.0, 0.0);
+            glColor3f(0.0, 0.2, 0.7); // Azul
+            // Parameters: height, base radius, top radius, slices, stacks
+            drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
+        glPopMatrix();  
     glPopMatrix();  
  
     //Chamada da função que desenha os eixos x,y,z
