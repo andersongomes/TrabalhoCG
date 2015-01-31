@@ -25,6 +25,7 @@ GLUquadricObj* myReusableQuadric = 0;
 float heightCilindro = 3.0;
 float heightCone = 3.0;
 float heightCone2 = 3.0;
+float rotacao = 0.0;
 float rotateAngle2 = -90;
 float posCone = 0.0;
 float corretor = 0.01;
@@ -46,7 +47,7 @@ float _zz3 = 0;
 
 // Zoom in e out
 double rotate_by_key = 0; 
-double rotate_x = 1.0; 
+double rotate_x = 0.7; 
 
 //Métodos de execução de Gram Schimit
 
@@ -192,7 +193,7 @@ void drawAxis(void) {
 	glPushMatrix();
 		glTranslatef(0, 0, 5);
 		glutSolidCone(0.10f, 0.3f, 20, 20);
-		glTranslatef(0, 0, 1.25);
+		glTranslatef(0, 0, 0.7);
 		output(0, 0, "Z");
 	glPopMatrix();
 
@@ -251,6 +252,7 @@ void drawScene(void) {
     // Segundo Vetor
     glPushMatrix();
         // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
+        glRotatef(rotacao, 1.0, 0.0, 0.0);
         // Elemento unido -> Cilindro + Cone
         glPushMatrix();
             glRotatef(-45.0, 1.0, 0.0, 0.0);
@@ -348,6 +350,14 @@ void rotationRight(int value){
          glutPostRedisplay();
          glutTimerFunc(100, rotationRight, value);
      }             
+}
+
+void rotacionar(int value){
+     if(rotacao < value){
+         rotacao += 0.2;
+         glutPostRedisplay();
+         glutTimerFunc(10, rotacionar, value);
+     }   
 }
 
 // Initialize OpenGL's rendering modes
@@ -530,6 +540,9 @@ void mySpecialKeyFunc(int key, int x, int y) {
         break;
         case GLUT_KEY_F7:
             rotationRight(-70);
+        break;
+        case GLUT_KEY_F8:
+            rotacionar(100);
         break;
     }
     
