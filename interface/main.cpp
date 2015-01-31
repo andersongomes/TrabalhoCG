@@ -13,7 +13,7 @@ using namespace std;
    
 // The next global variable controls the animation's state and speed.
 float RotateAngle = 0.0f; // Angle in degrees of rotation around y-axis
-float Azimuth = 20.0; // Rotated up or down by this amount
+float Azimuth = 0.0; // Rotated up or down by this amount
 float AngleStepSize = 3.0f; // Step three degrees at a time
 const float AngleStepMax = 10.0f;
 const float AngleStepMin = 0.1f;
@@ -236,7 +236,7 @@ void drawScene(void) {
         // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
         // Elemento unido -> Cilindro + Cone
         glPushMatrix();
-            glRotatef(rotateAngle2, 1.0, 0.0, 0.0);
+            glRotatef(rotateAngle2, 0.0, 0.0, 0.0);
             glColor3f(1.0, 0.4, 0.2); // Reddish color
             // Parameters: height, radius, slices, stacks
             drawGluCylinder(heightCilindro, 0.1, 10, 10);
