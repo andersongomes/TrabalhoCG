@@ -10,26 +10,15 @@
 #include <iostream>
 
 using namespace std; 
-   
+
 // The next global variable controls the animation's state and speed.
 float RotateAngle = 0.0f; // Angle in degrees of rotation around y-axis
 float Azimuth = 0.0; // Rotated up or down by this amount
 float AngleStepSize = 3.0f; // Step three degrees at a time
 const float AngleStepMax = 10.0f;
 const float AngleStepMin = 0.1f;
-int WireFrameOn = 1; // == 1 for wire frame mode
-GLUquadricObj* myReusableQuadric = 0;
+float t = 0.0f;
  
-//Variáveis Globais 
-
-float heightCilindro = 3.0;
-float heightCone = 3.0;
-float heightCone2 = 3.0;
-float rotacao = 0.0;
-float rotateAngle2 = -90;
-float posCone = 0.0;
-float corretor = 0.01;
-
 //Vetor 1
 float _xx1 = 0; 
 float _yy1 = 0;
@@ -49,10 +38,79 @@ float _zz3 = 0;
 double rotate_by_key = 0; 
 double rotate_x = 0.7; 
 
-//Métodos de execução de Gram Schimit
+// Desenha um cilindro entre dois pontos
+void renderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
+{
+   float vx = x2-x1;
+   float vy = y2-y1;
+   float vz = z2-z1;
 
+   //lida com o caso degenerado de z1 == z2 com uma aproximacao
+   if(vz == 0)
+       vz = .00000001;
+
+   float v = sqrt(vx*vx + vy*vy + vz*vz);
+   float ax = 57.2957795*acos(vz/v);
+   if (vz < 0.0)
+       ax = -ax;
+   float rx = -vy*vz;
+   float ry = vx*vz;
+   glPushMatrix();
+
+   //desenha o corpo do cilindro
+   glTranslatef(x1, y1, z1);
+   glRotatef(ax, rx, ry, 0.0);
+   gluQuadricOrientation(quadric,GLU_OUTSIDE);
+   gluCylinder(quadric, radius, radius, v, subdivisions, 1);
+
+   //desenha uma tampa
+   gluQuadricOrientation(quadric,GLU_INSIDE);
+   gluDisk(quadric, 0.0, radius, subdivisions, 1);
+   glTranslatef(0, 0, v);
+
+   //desenha a outra tampa
+   gluQuadricOrientation(quadric,GLU_OUTSIDE);
+   gluDisk(quadric, 0.0, radius, subdivisions, 1);
+   glPopMatrix();
+}
+
+// Desenha um cone entre dois pontos
+void renderCone(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
+{
+   float vx = x2-x1;
+   float vy = y2-y1;
+   float vz = z2-z1;
+   float tam;
+
+   //lida com o caso degenerado de z1 == z2 com uma aproximacao
+   if(vz == 0)
+       vz = .00000001;
+
+   float v = sqrt(vx*vx + vy*vy + vz*vz);
+   float ax = 57.2957795*acos(vz/v);
+   if (vz < 0.0)
+       ax = -ax;
+   float rx = -vy*vz;
+   float ry = vx*vz;
+   glPushMatrix();
+
+   //desenha o corpo do cone
+   glTranslatef(x1, y1, z1);
+   glRotatef(ax, rx, ry, 0.0);
+   gluQuadricOrientation(quadric,GLU_OUTSIDE);
+   gluCylinder(quadric, radius+0.1, 0, 0.8, subdivisions, 1);
+
+   //desenha a tampa
+   gluQuadricOrientation(quadric,GLU_INSIDE);
+   gluDisk(quadric, 0.0, radius, subdivisions, 1);
+   glTranslatef(0, 0, v);
+}
+
+//Resultados globais
+Vetor resultado1, resultado2, parcial;
+//Metodos de execucao de Gram Schimit
 void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
-    Vetor resultado1,resultado2;
+    //Vetor resultado1, resultado2;
     float numerador, numerador2,denominador, denominador2,aux1,aux2,aux3;;
     /* DESCOBRINDO O W2*/
     numerador = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
@@ -70,61 +128,33 @@ void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     aux1 = v3.vetor[0];
     aux2 = (numerador/denominador)*resultado1.vetor[0];
     aux3 = (numerador2/denominador2)*v1.vetor[0];
+    parcial.vetor[0] = aux2;
     resultado2.vetor[0] = aux1-aux2-aux3;
     aux1 = v3.vetor[1];
     aux2 = (numerador/denominador)*resultado1.vetor[1];
     aux3 = (numerador2/denominador2)*v1.vetor[1];
+    parcial.vetor[1] = aux2;
     resultado2.vetor[1] = aux1-aux2-aux3;
     aux1 = v3.vetor[2];
     aux2 = (numerador/denominador)*resultado1.vetor[2];
     aux3 = (numerador2/denominador2)*v1.vetor[2];
+    parcial.vetor[2] = aux2;
     resultado2.vetor[2] = aux1-aux2-aux3;
     /* FIM DO W3*/
     cout<<"v2:";
+    //Insere os dados do vetor 2 modificado no txt
     resultado1.showVetor(2);
     cout<<"v3:";
+    //Insere os dados do vetor 3 modificado no txt
     resultado2.showVetor(3);
 }
 
 void inicializacaoGramSchimidt(Vetor v1,Vetor v2,Vetor v3){
     cout<<"v1:";
+    //Insere os dados do vetor 1 no txt
     v1.showVetor(1);
     gramSchimidt(v1,v2,v3);
 }
-
-void drawGluSlantCylinder(double height, double radiusBase, double radiusTop, int slices, int stacks) {
-    if (!myReusableQuadric) {
-        myReusableQuadric = gluNewQuadric();
-        // Should (but don't) check if pointer is still null --- to catch memory allocation errors.
-        gluQuadricNormals(myReusableQuadric, GL_TRUE);
-    }
-    // Draw the cylinder.
-    gluCylinder(myReusableQuadric, radiusBase, radiusTop, height, slices, stacks);
-}
- 
-void drawGluCylinder(double height, double radius, int slices, int stacks) {
-    drawGluSlantCylinder(height, radius, radius, slices, stacks);
-}
- 
-void drawGluSlantCylinderWithCaps(double height, double radiusBase, double radiusTop, int slices, int stacks) {
-    // First draw the cylinder
-    drawGluSlantCylinder(height, radiusBase, radiusTop, slices, stacks);
-    // Draw the top disk cap
-    glPushMatrix();
-    glTranslated(0.0, 0.0, height);
-    gluDisk(myReusableQuadric, 0.0, radiusTop, slices, stacks);
-    glPopMatrix();
-    // Draw the bottom disk cap
-    glPushMatrix();
-    glRotated(180.0, 1.0, 0.0, 0.0);
-    gluDisk(myReusableQuadric, 0.0, radiusBase, slices, stacks);
-    glPopMatrix();
-}
- 
-void drawGluCylinderWithCaps(double height, double radius, int slices, int stacks) {
-    drawGluSlantCylinderWithCaps(height, radius, radius, slices, stacks);
-}
-
 
 void output(float x, float y, char *string)
 {
@@ -140,7 +170,7 @@ void output(float x, float y, char *string)
 // Draw the lines (x,y,z)
 void drawAxis(void) { 
     glPushMatrix();     // It is important to push the Matrix before calling 
-
+    
     // Draw the positive side of the lines x,y,z
     glBegin(GL_LINES);
         glColor3f (0.0, 1.0, 0.0); // Green for x axis
@@ -199,6 +229,7 @@ void drawAxis(void) {
 
 }
 
+int step = 1;
 /*
 * drawScene() handles the animation and the redrawing of the
 * graphics window contents.
@@ -210,12 +241,6 @@ void drawScene(void) {
     // Add ambient light
     GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
-
-    // Add positioned light
-    GLfloat lightColor0[] = {0.8f, 0.8f, 0.8f, 1.0f}; //Color (0.5, 0.5, 0.5)
-    GLfloat lightPos0[] = {4.0f, 0.0f, 8.0f, 0.2f}; //Positioned at (4, 0, 8)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
     
     // Rotate the image
     glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
@@ -226,68 +251,102 @@ void drawScene(void) {
     //glScalef(1.0f, 1.0f, rotate_x); 
     glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
 
-    glTranslatef(-1.5, 0.0, -35.0); // Translate from origin (in front of viewer)
+    glTranslatef(0.0, 0.0, -35.0); // Translate from origin (in front of viewer)
     glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
     glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
     glDisable(GL_CULL_FACE);
+    
+    //Define os pontos de origem
+    float x1 = 0;
+    float y1 = 0;
+    float z1 = 0;
 
-    // Primeiro vetor
-    glPushMatrix();
-        // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
-        // Elemento unido -> Cilindro + Cone
-        glPushMatrix();
-            glRotatef(rotateAngle2, 0.0, 0.0, 0.0);
-            glColor3f(1.0, 0.4, 0.2); // Reddish color
-            // Parameters: height, radius, slices, stacks
-            drawGluCylinder(heightCilindro, 0.1, 10, 10);
-            glEnable(GL_CULL_FACE);
-            glTranslatef(0.0, 0.0, heightCone2);
-            glRotatef(0.0, 1.0, 0.0, 0.0);
-            glColor3f(1.0, 0.4, 0.2); // Reddish color
-            // Parameters: height, base radius, top radius, slices, stacks
-            drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
-        glPopMatrix();
-    glPopMatrix();
- 
-    // Segundo Vetor
-    glPushMatrix();
-        // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
-        glRotatef(rotacao, 1.0, 0.0, 0.0);
-        // Elemento unido -> Cilindro + Cone
-        glPushMatrix();
-            glRotatef(-45.0, 1.0, 0.0, 0.0);
-            glColor3f(1.5, 1.2, 0.2); // Amarelo
-            // Parameters: height, radius, slices, stacks
-            drawGluCylinder(heightCilindro, 0.1, 10, 10);
-            glEnable(GL_CULL_FACE);
-            glTranslatef(0.0, 0.0, heightCone);
-            glRotatef(0.0, 1.0, 0.0, 0.0);
-            glColor3f(1.5, 1.2, 0.2); // Amarelo
-            // Parameters: height, base radius, top radius, slices, stacks
-            drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
-        glPopMatrix();
-    glPopMatrix();
- 
-    // Terceiro Vetor
-    glPushMatrix();
-        // glRotatef(angulo, 1.0, 0.0, 0.0) // Caso queira rotacionar o vetor todo (cilindro + cone),  só colocar o glRotatef aqui
-        // Elemento unido -> Cilindro + Cone
-        glPushMatrix();
-            glRotatef(-75.0, 0.0, 10.0, 0.0);
-            glColor3f(0.0, 0.2, 0.7); // Azul
-            // Parameters: height, radius, slices, stacks
-            drawGluCylinder(heightCilindro, 0.1, 10, 10);
-            glEnable(GL_CULL_FACE);
-            glTranslatef(0.0, 0.0, heightCone);
-            glRotatef(0.0, 1.0, 0.0, 0.0);
-            glColor3f(0.0, 0.2, 0.7); // Azul
-            // Parameters: height, base radius, top radius, slices, stacks
-            drawGluSlantCylinderWithCaps(0.6, 0.2, 0.0, 10, 10);
-        glPopMatrix();  
-    glPopMatrix();  
- 
-    //Chamada da função que desenha os eixos x,y,z
+    float radius = 0.03+(sin(t)/2+0.5)/5;
+
+    //Chamada da funcao que desenha os eixos x,y,z
     drawAxis();
+
+    //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
+    glPushMatrix();
+        glColor3f(1.0, 0.4, 0.2); // Vermelho
+        GLUquadricObj *quadric=gluNewQuadric();
+        gluQuadricNormals(quadric, GLU_SMOOTH);
+        renderCylinder(x1, y1, z1, _xx1, _yy1, _zz1, radius, 32, quadric);
+        renderCone(_xx1, _yy1, _zz1, _xx1*2, _yy1*2, _zz1*2 ,radius, 32, quadric);
+    glPopMatrix();
+
+   //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
+   glPushMatrix();
+       glColor3f(1.5, 1.2, 0.2); // Amarelo
+       GLUquadricObj *quadric2=gluNewQuadric();
+       gluQuadricNormals(quadric2, GLU_SMOOTH);
+       renderCylinder(x1, y1, z1, _xx2, _yy2, _zz2, radius, 32, quadric2);
+       renderCone(_xx2, _yy2, _zz2, _xx2*2, _yy2*2, _zz2*2 ,radius, 32, quadric2);
+   glPopMatrix();
+
+   //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
+   glPushMatrix();
+       glColor3f(0.0, 0.2, 0.7); // Azul
+       GLUquadricObj *quadric3=gluNewQuadric();
+       gluQuadricNormals(quadric3, GLU_SMOOTH);
+       renderCylinder(x1, y1, z1, _xx3, _yy3, _zz3, radius, 32, quadric3);
+       renderCone(_xx3, _yy3, _zz3, _xx3*2, _yy3*2, _zz3*2 ,radius, 32, quadric3);
+   glPopMatrix();
+
+// Nova posicao do vetor 2
+float novo_xx2 = resultado1.vetor[0];
+float novo_yy2 = resultado1.vetor[1];
+float novo_zz2 = resultado1.vetor[3];
+
+// Posicao parcial do vetor 3
+float parcial_xx3 = parcial.vetor[0];
+float parcial_yy3 = parcial.vetor[1];
+float parcial_zz3 = parcial.vetor[3];
+
+// Nova posicao do vetor 3
+float novo_xx3 = resultado2.vetor[0];
+float novo_yy3 = resultado2.vetor[1];
+float novo_zz3 = resultado2.vetor[3];
+
+   if (step == 1) {
+       if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.005;
+       if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.005;
+       if (_yy2 < novo_yy2) _yy2 = _yy2 + 0.005;
+       if (_yy2 > novo_yy2) _yy2 = _yy2 - 0.005;
+       if (_zz2 < novo_zz2) _zz2 = _zz2 + 0.005;
+       if (_zz2 > novo_zz2) _zz2 = _zz2 - 0.005;
+       if (fabs(_xx2 - novo_xx2) < 0.005 && fabs(_yy2 - novo_yy2) < 0.005 && fabs(_zz2 - novo_zz2) < 0.005) {
+          step++;
+          Sleep(1000);
+       }
+   }
+
+   if (step == 2) {
+       if (_xx3 < parcial_xx3) _xx3 = _xx3 + 0.005;
+       if (_xx3 > parcial_xx3) _xx3 = _xx3 - 0.005;
+       if (_yy3 < parcial_yy3) _yy3 = _yy3 + 0.005;
+       if (_yy3 > parcial_yy3) _yy3 = _yy3 - 0.005;
+       if (_zz3 < parcial_zz3) _zz3 = _zz3 + 0.005;
+       if (_zz3 > parcial_zz3) _zz3 = _zz3 - 0.005;
+       if (fabs(_xx3 - parcial_xx3) < 0.005 && fabs(_yy3 - parcial_yy3) < 0.005 && fabs(_zz3 - parcial_zz3) < 0.005) {
+          step++;
+          Sleep(1000);
+       }
+   }
+
+   if (step == 3) {
+       if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.005;
+       if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.005;
+       if (_yy3 < novo_yy3) _yy3 = _yy3 + 0.005;
+       if (_yy3 > novo_yy3) _yy3 = _yy3 - 0.005;
+       if (_zz3 < novo_zz3) _zz3 = _zz3 + 0.005;
+       if (_zz3 > novo_zz3) _zz3 = _zz3 - 0.005;
+       if (fabs(_xx3 - novo_xx3) < 0.005 && fabs(_yy3 - novo_yy3) < 0.005 && fabs(_zz3 - novo_zz3) < 0.005) {
+          step++;
+       }
+   }
+
+   glutPostRedisplay();
 
     // Flush the pipeline, swap the buffers
     glFlush();
@@ -295,71 +354,6 @@ void drawScene(void) {
     
 }
  
-void reduzVetor(void) {
-     heightCilindro -= 1.0;
-     heightCone -= 1.0; 
-     heightCone2 -= 1.0;
-}
-
-void aumentaVetor(void) {
-     heightCilindro += 1.0;
-     heightCone += 1.0; 
-     heightCone2 += 1.0;
-}
-
-void afastaVetor(void) {
-    heightCone2 += -0.04 - corretor;  
-    rotateAngle2 += 5;
-    posCone += 0.25;
-    corretor += 0.01;
-}
-
-void afastaVetor2(void) {
-    heightCone2 += 0.04 + corretor;
-    rotateAngle2 -= 5;
-    posCone -= 0.25;
-    corretor += 0.01;
-}
-
-void sizeUp(int value) {
-     if(heightCilindro <= value){
-         heightCilindro += 0.1;
-         heightCone += 0.1; 
-         heightCone2 += 0.1;
-         glutPostRedisplay();
-         glutTimerFunc(100, sizeUp, value);
-     }    
-}
-
-void sizeDown(int value) {
-     if(heightCilindro >= value){
-         heightCilindro -= 0.1;
-         heightCone -= 0.1; 
-         heightCone2 -= 0.1;
-         glutPostRedisplay();
-         glutTimerFunc(100, sizeDown, value);
-     }    
-}
-
-void rotationRight(int value){
-     if(rotateAngle2 < value){
-         heightCone2 += -0.04 - corretor;  
-         rotateAngle2 += 5;
-         posCone += 0.25;
-         corretor += 0.01;
-         glutPostRedisplay();
-         glutTimerFunc(100, rotationRight, value);
-     }             
-}
-
-void rotacionar(int value){
-     if(rotacao < value){
-         rotacao += 0.2;
-         glutPostRedisplay();
-         glutTimerFunc(10, rotacionar, value);
-     }   
-}
-
 // Initialize OpenGL's rendering modes
 void initRendering() {
     glEnable(GL_DEPTH_TEST); // Depth testing must be turned on
@@ -367,8 +361,13 @@ void initRendering() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Just show wireframes at first
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
+    GLfloat LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat LightDiffuse[] = { 0.5f, 1.0f, 1.0f, 1.0f };
+    GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
+    glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+    glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);
     glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
     glEnable(GL_NORMALIZE);
 }
   
@@ -409,7 +408,8 @@ void resizeWindow(int w, int h) {
     glLoadIdentity();
     gluPerspective(15.0, aspectRatio, 25.0, 45.0);
 }
- 
+
+//TODO Adicionar as valida??es aqui para n?o poluir o c?digo 
 void readParameters(){ 
     int i = 1;
     float x, y, z;
@@ -444,21 +444,30 @@ void readParameters(){
     fclose(entrada); 
 }
 
+void executaGramSchimidt(){
+    //Adicionar valida??es:
+    //Entrada nula
+    //Vetores com valores inv?lidos ou muito divergentes
+    readParameters();
+
+    Vetor vetor1, vetor2, vetor3;
+
+    vetor1.inicializaVetor(_xx1, _yy1, _zz1);
+    vetor2.inicializaVetor(_xx2, _yy2, _zz2);
+    vetor3.inicializaVetor(_xx3, _yy3, _zz3);
+    
+    inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
+    
+    
+    //TODO Reduzir o tamanho dos vetores para 2 para ficar interessante na anima??o
+     
+}
+
  
 // glutKeyboardFunc is called below to set this function to handle
 // all "normal" key presses.
 void myKeyboardFunc(unsigned char key, int x, int y) {
     switch (key) {
-        case 'w':
-            WireFrameOn = 1 - WireFrameOn;
-            if (WireFrameOn) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Just show wireframes
-            }
-            else {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Show solid polygons
-            }
-            glutPostRedisplay();
-            break;
         case 'R':
             AngleStepSize *= 1.5;
             if (AngleStepSize>AngleStepMax) {
@@ -513,49 +522,22 @@ void mySpecialKeyFunc(int key, int x, int y) {
             RotateAngle += 360.0f;
         }
         break;
-        //Diminui o Tamanho do vetor
-        case GLUT_KEY_F1:
-            reduzVetor(); 
-            Sleep(500);
-        break;
-        //Aumenta o Tamanho do vetor
-        case GLUT_KEY_F2:
-            aumentaVetor(); 
-            Sleep(500);
-        break;
-        //Rotaciona um vetor específico
-        case GLUT_KEY_F3:
-            afastaVetor(); 
-            Sleep(500);
-        break;
-        case GLUT_KEY_F4:
-            afastaVetor2(); 
-            Sleep(500);
-        break;
-        case GLUT_KEY_F5:
-            sizeUp(3);
-        break;
-        case GLUT_KEY_F6:
-            sizeDown(1);
-        break;
-        case GLUT_KEY_F7:
-            rotationRight(-70);
-        break;
-        case GLUT_KEY_F8:
-            rotacionar(100);
+        case GLUT_KEY_F9:
+             executaGramSchimidt();
         break;
     }
     
     glutPostRedisplay();
 }
 
+    Vetor vetor1, vetor2, vetor3;
 // Main routine
 // Set up OpenGL, define the callbacks and start the main loop
 int main(int argc, char** argv) {
     
     readParameters();
 
-    Vetor vetor1, vetor2, vetor3;
+
 
     vetor1.inicializaVetor(_xx1, _yy1, _zz1);
     vetor2.inicializaVetor(_xx2, _yy2, _zz2);
@@ -564,14 +546,16 @@ int main(int argc, char** argv) {
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
 
 
-    //Imprimi os parâmetros dos vetores
+    //Imprimi os par?metros dos vetores
+    /*
     FILE *saida;
     saida = fopen("out.txt", "w");
     if(saida != NULL){
         fprintf(saida, "%f %f %f %f %f %f %f %f %f", _xx1, _yy1, _zz1, _xx2, _yy2, _zz2, _xx3, _yy3, _zz3);
     }
     fclose(saida);
-
+    */
+    
     glutInit(&argc, argv);
     // We're going to animate it, so double buffer
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -579,14 +563,14 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(200, 60);
     // Tamanho da Janela
     glutInitWindowSize(800, 600);
-    // Título da Janela
+    // T?tulo da Janela
     glutCreateWindow("Gram Schmidt");
     
-    // Criar menu acessível através do botão direito do mouse
+    // Criar menu acess?vel atrav?s do bot?o direito do mouse
     int menuRightButton = glutCreateMenu(menu);
-    glutAddMenuEntry("Visualizar Informações", 1);
-    glutAddMenuEntry("Iniciar Animação", 2);
-    glutAddMenuEntry("Fechar Aplicação", 3);
+    glutAddMenuEntry("Visualizar Informa??es", 1);
+    glutAddMenuEntry("Iniciar Anima??o", 2);
+    glutAddMenuEntry("Fechar Aplica??o", 3);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     
     // Initialize OpenGL as we like it..
