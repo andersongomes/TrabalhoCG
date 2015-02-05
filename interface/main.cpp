@@ -18,6 +18,7 @@ float AngleStepSize = 3.0f; // Step three degrees at a time
 const float AngleStepMax = 10.0f;
 const float AngleStepMin = 0.1f;
 float t = 0.0f;
+static bool paused = false;
  
 //Vetor 1
 float _xx1 = 0; 
@@ -39,7 +40,7 @@ double rotate_by_key = 0;
 double rotate_x = 0.7; 
 
 // Desenha um cilindro entre dois pontos
-void renderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
+void renderVector(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
 {
    float vx = x2-x1;
    float vy = y2-y1;
@@ -61,49 +62,18 @@ void renderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, f
    glTranslatef(x1, y1, z1);
    glRotatef(ax, rx, ry, 0.0);
    gluQuadricOrientation(quadric,GLU_OUTSIDE);
-   gluCylinder(quadric, radius, radius, v, subdivisions, 1);
+   gluCylinder(quadric, radius, radius, v-0.5, subdivisions, 1);
 
    //desenha uma tampa
    gluQuadricOrientation(quadric,GLU_INSIDE);
    gluDisk(quadric, 0.0, radius, subdivisions, 1);
-   glTranslatef(0, 0, v);
+   glTranslatef(0, 0, v-0.5);
 
    //desenha a outra tampa
    gluQuadricOrientation(quadric,GLU_OUTSIDE);
-   gluDisk(quadric, 0.0, radius, subdivisions, 1);
+   //gluDisk(quadric, 0.0, radius, subdivisions, 1);
+   gluCylinder(quadric, radius+0.1, 0, 0.5, subdivisions, 1);
    glPopMatrix();
-}
-
-// Desenha um cone entre dois pontos
-void renderCone(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
-{
-   float vx = x2-x1;
-   float vy = y2-y1;
-   float vz = z2-z1;
-   float tam;
-
-   //lida com o caso degenerado de z1 == z2 com uma aproximacao
-   if(vz == 0)
-       vz = .00000001;
-
-   float v = sqrt(vx*vx + vy*vy + vz*vz);
-   float ax = 57.2957795*acos(vz/v);
-   if (vz < 0.0)
-       ax = -ax;
-   float rx = -vy*vz;
-   float ry = vx*vz;
-   glPushMatrix();
-
-   //desenha o corpo do cone
-   glTranslatef(x1, y1, z1);
-   glRotatef(ax, rx, ry, 0.0);
-   gluQuadricOrientation(quadric,GLU_OUTSIDE);
-   gluCylinder(quadric, radius+0.1, 0, 0.8, subdivisions, 1);
-
-   //desenha a tampa
-   gluQuadricOrientation(quadric,GLU_INSIDE);
-   gluDisk(quadric, 0.0, radius, subdivisions, 1);
-   glTranslatef(0, 0, v);
 }
 
 //Resultados globais
@@ -128,17 +98,17 @@ void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     aux1 = v3.vetor[0];
     aux2 = (numerador/denominador)*resultado1.vetor[0];
     aux3 = (numerador2/denominador2)*v1.vetor[0];
-    parcial.vetor[0] = aux2;
+    parcial.vetor[0] = aux2-aux3;
     resultado2.vetor[0] = aux1-aux2-aux3;
     aux1 = v3.vetor[1];
     aux2 = (numerador/denominador)*resultado1.vetor[1];
     aux3 = (numerador2/denominador2)*v1.vetor[1];
-    parcial.vetor[1] = aux2;
+    parcial.vetor[1] = aux2-aux3;
     resultado2.vetor[1] = aux1-aux2-aux3;
     aux1 = v3.vetor[2];
     aux2 = (numerador/denominador)*resultado1.vetor[2];
     aux3 = (numerador2/denominador2)*v1.vetor[2];
-    parcial.vetor[2] = aux2;
+    parcial.vetor[2] = aux2-aux3;
     resultado2.vetor[2] = aux1-aux2-aux3;
     /* FIM DO W3*/
     cout<<"v2:";
@@ -197,7 +167,7 @@ void drawAxis(void) {
         glVertex3f(0,-5,0);
         glColor3f(0.0,0.0,1.0);     // Blue for z axis
         glVertex3f(0,0,0);
-        glVertex3f(0,0,-10);
+        glVertex3f(0,0,-5);
     glEnd();
     glDisable(GL_LINE_STIPPLE);     // Disable the line stipple
     glPopMatrix();      // Don't forget to pop the Matrix
@@ -229,12 +199,16 @@ void drawAxis(void) {
 
 }
 
-int step = 1;
+int step = 0;
+float a = 0;
+float b = 0;
+float c = 0;
 /*
 * drawScene() handles the animation and the redrawing of the
 * graphics window contents.
 */
 void drawScene(void) {
+if(!paused){
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -251,7 +225,7 @@ void drawScene(void) {
     //glScalef(1.0f, 1.0f, rotate_x); 
     glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
 
-    glTranslatef(0.0, 0.0, -35.0); // Translate from origin (in front of viewer)
+    glTranslatef(0.0, -0.3, -35.0); // Translate from origin (in front of viewer)
     glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
     glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
     glDisable(GL_CULL_FACE);
@@ -271,8 +245,7 @@ void drawScene(void) {
         glColor3f(1.0, 0.4, 0.2); // Vermelho
         GLUquadricObj *quadric=gluNewQuadric();
         gluQuadricNormals(quadric, GLU_SMOOTH);
-        renderCylinder(x1, y1, z1, _xx1, _yy1, _zz1, radius, 32, quadric);
-        renderCone(_xx1, _yy1, _zz1, _xx1*2, _yy1*2, _zz1*2 ,radius, 32, quadric);
+        renderVector(x1, y1, z1, _xx1, _yy1, _zz1, radius, 32, quadric);
     glPopMatrix();
 
    //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
@@ -280,8 +253,7 @@ void drawScene(void) {
        glColor3f(1.5, 1.2, 0.2); // Amarelo
        GLUquadricObj *quadric2=gluNewQuadric();
        gluQuadricNormals(quadric2, GLU_SMOOTH);
-       renderCylinder(x1, y1, z1, _xx2, _yy2, _zz2, radius, 32, quadric2);
-       renderCone(_xx2, _yy2, _zz2, _xx2*2, _yy2*2, _zz2*2 ,radius, 32, quadric2);
+       renderVector(x1, y1, z1, _xx2, _yy2, _zz2, radius, 32, quadric2);
    glPopMatrix();
 
    //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
@@ -289,8 +261,7 @@ void drawScene(void) {
        glColor3f(0.0, 0.2, 0.7); // Azul
        GLUquadricObj *quadric3=gluNewQuadric();
        gluQuadricNormals(quadric3, GLU_SMOOTH);
-       renderCylinder(x1, y1, z1, _xx3, _yy3, _zz3, radius, 32, quadric3);
-       renderCone(_xx3, _yy3, _zz3, _xx3*2, _yy3*2, _zz3*2 ,radius, 32, quadric3);
+       renderVector(x1, y1, z1, _xx3, _yy3, _zz3, radius, 32, quadric3);
    glPopMatrix();
 
 // Nova posicao do vetor 2
@@ -308,7 +279,71 @@ float novo_xx3 = resultado2.vetor[0];
 float novo_yy3 = resultado2.vetor[1];
 float novo_zz3 = resultado2.vetor[3];
 
-   if (step == 1) {
+   if (step == 0) {
+       RotateAngle = RotateAngle + 0.1f;
+       if (RotateAngle > 40.0f) {
+            glPushMatrix();
+               glRotatef(40, 1, 0, 0);
+               glColor4f( 0.7f, 0.7f, 0.7f, 0.3f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
+               glBegin(GL_QUADS);
+                   glVertex3f(-4, 0, -4);
+                   glVertex3f(4, 0, -4);
+                   glVertex3f(4, 0, 4);
+                   glVertex3f(-4, 0, 4);
+               glEnd();
+    	       glDisable(GL_BLEND);
+            glPopMatrix();
+            step++;
+       }
+}
+   
+    if (step == 1) {
+        glPushMatrix();
+           glRotatef(40, 1, 0, 0);
+           glColor4f( 0.7f, 0.7f, 0.7f, 0.3f);
+           glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+           glEnable(GL_BLEND);
+           glBegin(GL_QUADS);
+               glVertex3f(-4, 0, -4);
+               glVertex3f(4, 0, -4);
+               glVertex3f(4, 0, 4);
+               glVertex3f(-4, 0, 4);
+           glEnd();
+	       glDisable(GL_BLEND);
+        glPopMatrix();
+
+        glLineWidth(1.5); 
+        glColor3f(1.0, 1.0, 0.0);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
+        glBegin(GL_LINES);
+            glVertex3f(_xx1, _yy1, _zz1);
+            glVertex3f(novo_xx2, b, novo_zz2);
+        glEnd();
+        glDisable(GL_LINE_STIPPLE);
+
+        if (b < novo_yy2) b = b + 0.005;
+        if (b > novo_yy2) b = b - 0.005;
+
+        if (fabs(b - novo_yy2) < 0.005) {
+           step++;
+           Sleep(500);
+        }
+   }
+
+   if (step == 2) {
+       glLineWidth(1.5); 
+       glColor3f(1.0, 1.0, 1.0);
+       glLineStipple(2, 0xAAAA);
+       glEnable(GL_LINE_STIPPLE);
+       glBegin(GL_LINES);
+           glVertex3f(_xx1, _yy1, _zz1);
+           glVertex3f(novo_xx2, novo_yy2, novo_zz2);
+       glEnd();
+       glDisable(GL_LINE_STIPPLE);
+
        if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.005;
        if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.005;
        if (_yy2 < novo_yy2) _yy2 = _yy2 + 0.005;
@@ -321,7 +356,13 @@ float novo_zz3 = resultado2.vetor[3];
        }
    }
 
-   if (step == 2) {
+   if (step == 3) {
+
+       RotateAngle = RotateAngle - 0.1f;
+       if (RotateAngle < -60.0f) step++;
+}
+
+   if (step == 4) {
        if (_xx3 < parcial_xx3) _xx3 = _xx3 + 0.005;
        if (_xx3 > parcial_xx3) _xx3 = _xx3 - 0.005;
        if (_yy3 < parcial_yy3) _yy3 = _yy3 + 0.005;
@@ -330,11 +371,11 @@ float novo_zz3 = resultado2.vetor[3];
        if (_zz3 > parcial_zz3) _zz3 = _zz3 - 0.005;
        if (fabs(_xx3 - parcial_xx3) < 0.005 && fabs(_yy3 - parcial_yy3) < 0.005 && fabs(_zz3 - parcial_zz3) < 0.005) {
           step++;
-          Sleep(1000);
+          Sleep(500);
        }
    }
 
-   if (step == 3) {
+   if (step == 5) {
        if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.005;
        if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.005;
        if (_yy3 < novo_yy3) _yy3 = _yy3 + 0.005;
@@ -346,8 +387,9 @@ float novo_zz3 = resultado2.vetor[3];
        }
    }
 
-   glutPostRedisplay();
 
+   glutPostRedisplay();
+}
     // Flush the pipeline, swap the buffers
     glFlush();
     glutSwapBuffers();
@@ -486,6 +528,10 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
              break;
         case 'b':
              rotate_x -= .05;
+             glutPostRedisplay();
+             break;
+        case 'p':
+             paused = !paused;
              glutPostRedisplay();
              break;
         case 27: // Escape key
