@@ -316,12 +316,13 @@ float novo_zz3 = resultado2.vetor[2];
 double angulo;
 
    if (step == 0) {
-       RotateAngle = RotateAngle + 0.1f;
+       RotateAngle = RotateAngle + 0.15f;
        if (RotateAngle > 40.0f) {
             glPushMatrix();
                angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
+               glDisable(GL_DEPTH_TEST);
                glRotatef(angulo, 1, 0, 0);
-               glColor4f( 0.7f, 0.7f, 0.7f, 0.3f);
+               glColor4f( 0.7f, 0.7f, 0.7f, 0.2f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
                glBegin(GL_QUADS);
@@ -331,16 +332,19 @@ double angulo;
                    glVertex3f(7, -7, 0);
                glEnd();
     	       glDisable(GL_BLEND);
+               glEnable(GL_DEPTH_TEST);
             glPopMatrix();
+
             step++;
        }
-}
+    }
    
     if (step == 1) {
         glPushMatrix();
            angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
+           glDisable(GL_DEPTH_TEST);
            glRotatef(angulo, 1, 0, 0);
-           glColor4f( 0.7f, 0.7f, 0.7f, 0.3f);
+           glColor4f( 0.7f, 0.7f, 0.7f, 0.2f);
            glBlendFunc(GL_SRC_ALPHA,GL_ONE);
            glEnable(GL_BLEND);
            glBegin(GL_QUADS);
@@ -350,6 +354,7 @@ double angulo;
                glVertex3f(7, -7, 0);
            glEnd();
 	       glDisable(GL_BLEND);
+           glEnable(GL_DEPTH_TEST);
         glPopMatrix();
 
         glLineWidth(1.5); 
@@ -382,45 +387,64 @@ double angulo;
        glEnd();
        glDisable(GL_LINE_STIPPLE);
 
-       if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.005;
-       if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.005;
-       if (_yy2 < novo_yy2) _yy2 = _yy2 + 0.005;
-       if (_yy2 > novo_yy2) _yy2 = _yy2 - 0.005;
-       if (_zz2 < novo_zz2) _zz2 = _zz2 + 0.005;
-       if (_zz2 > novo_zz2) _zz2 = _zz2 - 0.005;
-       if (fabs(_xx2 - novo_xx2) < 0.005 && fabs(_yy2 - novo_yy2) < 0.005 && fabs(_zz2 - novo_zz2) < 0.005) {
+       if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.01;
+       if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.01;
+       if (_yy2 < novo_yy2) _yy2 = _yy2 + 0.01;
+       if (_yy2 > novo_yy2) _yy2 = _yy2 - 0.01;
+       if (_zz2 < novo_zz2) _zz2 = _zz2 + 0.01;
+       if (_zz2 > novo_zz2) _zz2 = _zz2 - 0.01;
+       if (fabs(_xx2 - novo_xx2) < 0.05 && fabs(_yy2 - novo_yy2) < 0.05 && fabs(_zz2 - novo_zz2) < 0.05) {
           step++;
           Sleep(1000);
        }
    }
 
    if (step == 3) {
-
-       RotateAngle = RotateAngle - 0.1f;
+       RotateAngle = RotateAngle - 0.15f;
        if (RotateAngle < -60.0f) step++;
 }
 
    if (step == 4) {
-       if (_xx3 < parcial_xx3) _xx3 = _xx3 + 0.005;
-       if (_xx3 > parcial_xx3) _xx3 = _xx3 - 0.005;
-       if (_yy3 < parcial_yy3) _yy3 = _yy3 + 0.005;
-       if (_yy3 > parcial_yy3) _yy3 = _yy3 - 0.005;
-       if (_zz3 < parcial_zz3) _zz3 = _zz3 + 0.005;
-       if (_zz3 > parcial_zz3) _zz3 = _zz3 - 0.005;
-       if (fabs(_xx3 - parcial_xx3) < 0.005 && fabs(_yy3 - parcial_yy3) < 0.005 && fabs(_zz3 - parcial_zz3) < 0.005) {
+        glLineWidth(1.5); 
+        glColor3f(1.0, 1.0, 0.0);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
+        glBegin(GL_LINES);
+            glVertex3f(novo_xx2, b, novo_zz2);
+            glVertex3f(parcial_xx3, parcial_yy3, parcial_zz3);
+        glEnd();
+        glDisable(GL_LINE_STIPPLE);
+
+       if (_xx3 < parcial_xx3) _xx3 = _xx3 + 0.01;
+       if (_xx3 > parcial_xx3) _xx3 = _xx3 - 0.01;
+       if (_yy3 < parcial_yy3) _yy3 = _yy3 + 0.01;
+       if (_yy3 > parcial_yy3) _yy3 = _yy3 - 0.01;
+       if (_zz3 < parcial_zz3) _zz3 = _zz3 + 0.01;
+       if (_zz3 > parcial_zz3) _zz3 = _zz3 - 0.01;
+       if (fabs(_xx3 - parcial_xx3) < 0.05 && fabs(_yy3 - parcial_yy3) < 0.05 && fabs(_zz3 - parcial_zz3) < 0.05) {
           step++;
           Sleep(500);
        }
    }
 
    if (step == 5) {
-       if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.005;
-       if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.005;
-       if (_yy3 < novo_yy3) _yy3 = _yy3 + 0.005;
-       if (_yy3 > novo_yy3) _yy3 = _yy3 - 0.005;
-       if (_zz3 < novo_zz3) _zz3 = _zz3 + 0.005;
-       if (_zz3 > novo_zz3) _zz3 = _zz3 - 0.005;
-       if (fabs(_xx3 - novo_xx3) < 0.005 && fabs(_yy3 - novo_yy3) < 0.005 && fabs(_zz3 - novo_zz3) < 0.005) {
+        glLineWidth(1.5); 
+        glColor3f(1.0, 1.0, 0.0);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
+        glBegin(GL_LINES);
+            glVertex3f(_xx1, _yy1, _zz1);
+            glVertex3f(novo_xx3, novo_yy3, novo_zz3);
+        glEnd();
+        glDisable(GL_LINE_STIPPLE);
+
+       if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.01;
+       if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.01;
+       if (_yy3 < novo_yy3) _yy3 = _yy3 + 0.01;
+       if (_yy3 > novo_yy3) _yy3 = _yy3 - 0.01;
+       if (_zz3 < novo_zz3) _zz3 = _zz3 + 0.01;
+       if (_zz3 > novo_zz3) _zz3 = _zz3 - 0.01;
+       if (fabs(_xx3 - novo_xx3) < 0.05 && fabs(_yy3 - novo_yy3) < 0.05 && fabs(_zz3 - novo_zz3) < 0.05) {
           step++;
        }
    }
