@@ -19,7 +19,7 @@ float AngleStepSize = 3.0f; // Step three degrees at a time
 const float AngleStepMax = 10.0f;
 const float AngleStepMin = 0.1f;
 float t = 0.0f;
-static bool paused = false;
+static bool paused = true;
  
 //Vetor 1
 float _xx1 = 0; 
@@ -241,7 +241,48 @@ float c = 0;
 * drawScene() handles the animation and the redrawing of the
 * graphics window contents.
 */
+
+int teste = 1;
 void drawScene(void) {
+    if (teste) {
+        // Clear the rendering window
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        // Add ambient light
+        GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+        
+        // Rotate the image
+        glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
+        glLoadIdentity(); // Initialize to the identity
+        // Zoom da camera
+        glScalef(rotate_x, rotate_x, 1.0f); 
+        //glScalef(1.0f, 1.0f, rotate_x); 
+        glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
+        
+        glTranslatef(0.0, -0.3, -35.0); // Translate from origin (in front of viewer)
+        glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
+        glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
+        glDisable(GL_CULL_FACE);
+        
+        glPushMatrix();
+            glColor3f(1.0f, 1.0f, 1.0f);
+        	output(-2.7, 1.0, "Algoritmo de Gram-Schmidt");
+            glColor3f(0.6f, 0.6f, 0.6f);
+        	output(-6.5, -1.5, "Trabalho de Computacao Grafica");
+        	output(-6.5, -2, "Universidade Estadual do Ceara");
+        	output(-6.5, -2.5, "Professor: Thelmo de Araujo");
+        	output(-6.5, -3, "Equipe: Rodrigo Magalhaes, Anderson Gomes e Kellton Leitao");
+        	output(-6.5, -4.5, "Pressione a tecla \"P\" para iniciar.");
+        glPopMatrix();
+        
+        teste = 0;
+        glutPostRedisplay();
+        // Flush the pipeline, swap the buffers
+        glFlush();
+        glutSwapBuffers();
+    }
+
 if(!paused){
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
