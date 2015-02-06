@@ -1,13 +1,14 @@
 #include <windows.h>
 #include <GL/glut.h>
 #include <stdlib.h>
-#include <math.h> 
 #include <stdio.h>
+#include <math.h>
+#include <cmath> 
+#include <iostream>
 #include "util.h"
-
 #include "vetor.h"
 
-#include <iostream>
+#define PI 3.12159265f
 
 using namespace std; 
 
@@ -81,7 +82,7 @@ Vetor resultado1, resultado2, parcial;
 //Metodos de execucao de Gram Schimit
 void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     //Vetor resultado1, resultado2;
-    float numerador, numerador2,denominador, denominador2,aux1,aux2,aux3;;
+    float numerador, numerador2, denominador, denominador2, aux1, aux2, aux3;;
     /* DESCOBRINDO O W2*/
     numerador = (v1.vetor[0]*v2.vetor[0] + v1.vetor[1]*v2.vetor[1] + v1.vetor[2]*v2.vetor[2]);
     denominador = pow(v1.vetor[0],2) + pow(v1.vetor[1],2) + pow(v1.vetor[2],2);
@@ -125,6 +126,39 @@ void inicializacaoGramSchimidt(Vetor v1,Vetor v2,Vetor v3){
     v1.showVetor(1);
     gramSchimidt(v1,v2,v3);
 }
+
+double anguloEntreVetores(double x1, double y1, double z1, double x2, double y2, double z2) {
+    double a[3], b[3];
+    double A, B;
+    double total, twoDtotal, threeDtotal;
+    double ans;
+
+    a[0] = x1;
+    a[1] = y1;
+    a[2] = z1;
+
+    b[0] = x2;
+    b[1] = y2;
+    b[2] = z2;
+
+    twoDtotal = ((a[0] * b[0]) + (a[1] * b[1]));
+    threeDtotal = ((a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]));
+
+    A = pow(a[0], 2) + pow(a[1], 2) + pow(a[2], 2);
+    A = sqrt(A);
+
+    B = pow(b[0], 2) + pow(b[1], 2) + pow(b[2], 2);
+    B = sqrt(B);
+
+    total = (A * B);
+
+    ans = threeDtotal / total;
+
+    ans = acos(ans) * 180.0 / PI;
+
+    return ans;
+}
+
 
 void output(float x, float y, char *string)
 {
@@ -267,31 +301,34 @@ if(!paused){
 // Nova posicao do vetor 2
 float novo_xx2 = resultado1.vetor[0];
 float novo_yy2 = resultado1.vetor[1];
-float novo_zz2 = resultado1.vetor[3];
+float novo_zz2 = resultado1.vetor[2];
 
 // Posicao parcial do vetor 3
 float parcial_xx3 = parcial.vetor[0];
 float parcial_yy3 = parcial.vetor[1];
-float parcial_zz3 = parcial.vetor[3];
+float parcial_zz3 = parcial.vetor[2];
 
 // Nova posicao do vetor 3
 float novo_xx3 = resultado2.vetor[0];
 float novo_yy3 = resultado2.vetor[1];
-float novo_zz3 = resultado2.vetor[3];
+float novo_zz3 = resultado2.vetor[2];
+
+double angulo;
 
    if (step == 0) {
        RotateAngle = RotateAngle + 0.1f;
        if (RotateAngle > 40.0f) {
             glPushMatrix();
-               glRotatef(40, 1, 0, 0);
+               angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
+               glRotatef(angulo, 1, 0, 0);
                glColor4f( 0.7f, 0.7f, 0.7f, 0.3f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
                glBegin(GL_QUADS);
-                   glVertex3f(-4, 0, -4);
-                   glVertex3f(4, 0, -4);
-                   glVertex3f(4, 0, 4);
-                   glVertex3f(-4, 0, 4);
+                   glVertex3f(-7, -7, 0);
+                   glVertex3f(-7, 7, 0);
+                   glVertex3f(7, 7, 0);
+                   glVertex3f(7, -7, 0);
                glEnd();
     	       glDisable(GL_BLEND);
             glPopMatrix();
@@ -301,15 +338,16 @@ float novo_zz3 = resultado2.vetor[3];
    
     if (step == 1) {
         glPushMatrix();
-           glRotatef(40, 1, 0, 0);
+           angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
+           glRotatef(angulo, 1, 0, 0);
            glColor4f( 0.7f, 0.7f, 0.7f, 0.3f);
            glBlendFunc(GL_SRC_ALPHA,GL_ONE);
            glEnable(GL_BLEND);
            glBegin(GL_QUADS);
-               glVertex3f(-4, 0, -4);
-               glVertex3f(4, 0, -4);
-               glVertex3f(4, 0, 4);
-               glVertex3f(-4, 0, 4);
+               glVertex3f(-7, -7, 0);
+               glVertex3f(-7, 7, 0);
+               glVertex3f(7, 7, 0);
+               glVertex3f(7, -7, 0);
            glEnd();
 	       glDisable(GL_BLEND);
         glPopMatrix();
