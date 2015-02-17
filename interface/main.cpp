@@ -41,16 +41,15 @@ double rotate_by_key = 0;
 double rotate_x = 0.7; 
 
 // Desenha um cilindro entre dois pontos
-void renderVector(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
-{
+void renderVector(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric){
    float vx = x2-x1;
    float vy = y2-y1;
    float vz = z2-z1;
 
    //lida com o caso degenerado de z1 == z2 com uma aproximacao
-   if(vz == 0)
+   if(vz == 0){
        vz = .00000001;
-
+   }    
    float v = sqrt(vx*vx + vy*vy + vz*vz);
    float ax = 57.2957795*acos(vz/v);
    if (vz < 0.0)
@@ -171,13 +170,11 @@ Vetor normalizaVetor(double x, double y, double z) {
     return normalizado;
 }
 
-void output(float x, float y, char *string)
-{
+void output(float x, float y, char *string) {
   int len, i;
   glRasterPos2f(x, y);
   len = (int) strlen(string);
-  for (i = 0; i < len; i++)
-  {
+  for (i = 0; i < len; i++) {
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
   }
 }
@@ -201,7 +198,7 @@ void drawAxis(void) {
 
     // Dotted lines for the negative sides of x,y,z
     glEnable(GL_LINE_STIPPLE);  // Enable line stipple to use a 
-                // dotted pattern for the lines
+    // Dotted pattern for the lines
     glLineStipple(1, 0x0101);   // Dotted stipple pattern for the lines
     glBegin(GL_LINES); 
         glColor3f (0.0, 1.0, 0.0);  // Green for x axis
@@ -217,7 +214,7 @@ void drawAxis(void) {
     glDisable(GL_LINE_STIPPLE);     // Disable the line stipple
     glPopMatrix();      // Don't forget to pop the Matrix
 
-    //desenha os cones nos eixos
+    // Desenha os cones nos eixos
 	glColor3f( 0.0f, 1.0f, 0.0f);
 	glPushMatrix();
 		glTranslatef(5, 0, 0);
@@ -260,7 +257,9 @@ double _xx3_fade, _yy3_fade, _zz3_fade;
 int v1_normal, v2_normal, v3_normal;
 
 int splash_flag = 1;
+
 void drawScene(void) {
+    //Desenha a Splash Scream
     if (splash_flag) {
         // Clear the rendering window
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -299,7 +298,8 @@ void drawScene(void) {
         glFlush();
         glutSwapBuffers();
     }
-
+    
+    // Inicia o gram schmidt
     if(!paused){
         // Clear the rendering window
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -375,6 +375,7 @@ void drawScene(void) {
         
         double angulo;
         
+        //1° Passo Efetua o desenho do plano
         if (step == 0) {
            RotateAngle = RotateAngle + 0.15f;
            if (RotateAngle > 40.0f) {
@@ -397,6 +398,7 @@ void drawScene(void) {
            }
         }
         
+        //2° Passo 
         if (step == 1) {
             glPushMatrix();
                angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
@@ -432,6 +434,7 @@ void drawScene(void) {
             }
         }
         
+        //3° Passo
         if (step == 2) {
            glLineWidth(1.5); 
            glColor3f(1.0, 1.0, 1.0);
@@ -442,6 +445,23 @@ void drawScene(void) {
                glVertex3f(novo_xx2, novo_yy2, novo_zz2);
            glEnd();
            glDisable(GL_LINE_STIPPLE);
+           
+           //TENTATIVA DESENHAR PLANO 2
+           FILE *read;
+           read = fopen("outV3.txt", "r");
+           float a, b, c;
+           if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+           } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+           }
+           fclose(read); 
+           
+           glBegin(GL_TRIANGLES);                                         
+                glVertex3f( 0.0f, 0.0f, 0.0f);                         
+                glVertex3f(_xx1, _yy1, _zz1);                        
+                glVertex3f(a, b, c);                          
+           glEnd();  
         
            if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.01;
            if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.01;
@@ -455,11 +475,14 @@ void drawScene(void) {
            }
         }
         
+        //4° Passo - Efetua a rotação 
         if (step == 3) {
            RotateAngle = RotateAngle - 0.15f;
            if (RotateAngle < -60.0f) step++;
         }
         
+        
+        //5° Passo
         if (step == 4) {
             glLineWidth(1.5); 
             glColor3f(1.0, 1.0, 1.0);
@@ -470,19 +493,38 @@ void drawScene(void) {
                 glVertex3f(parcial_xx3, parcial_yy3, parcial_zz3);
             glEnd();
             glDisable(GL_LINE_STIPPLE);
+            
+            //TENTATIVA DESENHAR PLANO 3
+            FILE *read;
+            read = fopen("outV2.txt", "r");
+            float a, b, c;
+            
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+            }
+            fclose(read); 
+           
+            glBegin(GL_TRIANGLES);                                         
+                glVertex3f( 0.0f, 0.0f, 0.0f);                         
+                glVertex3f(_xx1, _yy1, _zz1);                        
+                glVertex3f(a, b, c);                          
+            glEnd();
         
-           if (_xx3 < parcial_xx3) _xx3 = _xx3 + 0.01;
-           if (_xx3 > parcial_xx3) _xx3 = _xx3 - 0.01;
-           if (_yy3 < parcial_yy3) _yy3 = _yy3 + 0.01;
-           if (_yy3 > parcial_yy3) _yy3 = _yy3 - 0.01;
-           if (_zz3 < parcial_zz3) _zz3 = _zz3 + 0.01;
-           if (_zz3 > parcial_zz3) _zz3 = _zz3 - 0.01;
-           if (fabs(_xx3 - parcial_xx3) < 0.05 && fabs(_yy3 - parcial_yy3) < 0.05 && fabs(_zz3 - parcial_zz3) < 0.05) {
-              step++;
-              Sleep(500);
-           }
+            if (_xx3 < parcial_xx3) _xx3 = _xx3 + 0.01;
+            if (_xx3 > parcial_xx3) _xx3 = _xx3 - 0.01;
+            if (_yy3 < parcial_yy3) _yy3 = _yy3 + 0.01;
+            if (_yy3 > parcial_yy3) _yy3 = _yy3 - 0.01;
+            if (_zz3 < parcial_zz3) _zz3 = _zz3 + 0.01;
+            if (_zz3 > parcial_zz3) _zz3 = _zz3 - 0.01;
+            if (fabs(_xx3 - parcial_xx3) < 0.05 && fabs(_yy3 - parcial_yy3) < 0.05 && fabs(_zz3 - parcial_zz3) < 0.05) {
+               step++;
+               Sleep(500);
+            }
         }
         
+        //6° Passo
         if (step == 5) {
             glLineWidth(1.5); 
             glColor3f(1.0, 1.0, 1.0);
@@ -493,18 +535,37 @@ void drawScene(void) {
                 glVertex3f(novo_xx3, novo_yy3, novo_zz3);
             glEnd();
             glDisable(GL_LINE_STIPPLE);
-        
-           if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.01;
-           if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.01;
-           if (_yy3 < novo_yy3) _yy3 = _yy3 + 0.01;
-           if (_yy3 > novo_yy3) _yy3 = _yy3 - 0.01;
-           if (_zz3 < novo_zz3) _zz3 = _zz3 + 0.01;
-           if (_zz3 > novo_zz3) _zz3 = _zz3 - 0.01;
-           if (fabs(_xx3 - novo_xx3) < 0.05 && fabs(_yy3 - novo_yy3) < 0.05 && fabs(_zz3 - novo_zz3) < 0.05) {
-              step++;
-           }
+            
+            //TENTATIVA DESENHAR PLANO 3
+            FILE *read;
+            read = fopen("outV2.txt", "r");
+            float a, b, c;
+            
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+            }
+            fclose(read); 
+           
+            glBegin(GL_TRIANGLES);                                         
+                glVertex3f( 0.0f, 0.0f, 0.0f);                         
+                glVertex3f(_xx1, _yy1, _zz1);                        
+                glVertex3f(a, b, c);                          
+            glEnd();
+            
+            if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.01;
+            if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.01;
+            if (_yy3 < novo_yy3) _yy3 = _yy3 + 0.01;
+            if (_yy3 > novo_yy3) _yy3 = _yy3 - 0.01;
+            if (_zz3 < novo_zz3) _zz3 = _zz3 + 0.01;
+            if (_zz3 > novo_zz3) _zz3 = _zz3 - 0.01;
+            if (fabs(_xx3 - novo_xx3) < 0.05 && fabs(_yy3 - novo_yy3) < 0.05 && fabs(_zz3 - novo_zz3) < 0.05) {
+                step++;
+            }
         }
-    
+        
+        //7° Passo
         if (step == 6) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -554,9 +615,11 @@ void drawScene(void) {
             _yy3_fade = _yy3;
             _zz3_fade = _zz3;
             
+            
             step++;
         }
         
+        //8° Passo
         if (step == 7) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -662,6 +725,7 @@ void drawScene(void) {
             if (v1_normal == 1 && v2_normal == 1 && v3_normal == 1) step++;
         }
         
+        //9° Passo
         if (step == 8) {
             glPushMatrix();
               glColor3f(1.0, 0.4, 0.2); // Vermelho
@@ -683,9 +747,10 @@ void drawScene(void) {
                gluQuadricNormals(quadric3, GLU_SMOOTH);
                renderVector(x1, y1, z1, _xx3_fade, _yy3_fade, _zz3_fade, radius, 32, quadric3);
             glPopMatrix();
+             
         }
-    
-       glutPostRedisplay();
+        
+        glutPostRedisplay();
     }
     // Flush the pipeline, swap the buffers
     glFlush();
@@ -748,7 +813,7 @@ void resizeWindow(int w, int h) {
     gluPerspective(15.0, aspectRatio, 25.0, 45.0);
 }
 
-//TODO Adicionar as valida??es aqui para n?o poluir o c?digo 
+//TODO Adicionar as validações aqui para não poluir o código 
 void readParameters(){ 
     int i = 1;
     float x, y, z;
@@ -784,9 +849,9 @@ void readParameters(){
 }
 
 void executaGramSchimidt(){
-    //Adicionar valida??es:
+    //Adicionar validações:
     //Entrada nula
-    //Vetores com valores inv?lidos ou muito divergentes
+    //Vetores com valores inválidos ou muito divergentes
     readParameters();
 
     Vetor vetor1, vetor2, vetor3;
@@ -798,7 +863,7 @@ void executaGramSchimidt(){
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
     
     
-    //TODO Reduzir o tamanho dos vetores para 2 para ficar interessante na anima??o
+    //TODO Reduzir o tamanho dos vetores para 2 para ficar interessante na animação
      
 }
 
@@ -889,7 +954,7 @@ int main(int argc, char** argv) {
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
 
 
-    //Imprimi os par?metros dos vetores
+    //Imprimi os parâmetros dos vetores
     /*
     FILE *saida;
     saida = fopen("out.txt", "w");
@@ -906,16 +971,16 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(200, 60);
     // Tamanho da Janela
     glutInitWindowSize(800, 600);
-    // T?tulo da Janela
+    // Título da Janela
     glutCreateWindow("Gram Schmidt");
     
-    // Criar menu acess?vel atrav?s do bot?o direito do mouse
+    // Criar menu acessível através do botão direito do mouse
     int menuRightButton = glutCreateMenu(menu);
-    glutAddMenuEntry("Visualizar Informa??es", 1);
-    glutAddMenuEntry("Iniciar Anima??o", 2);
-    glutAddMenuEntry("Fechar Aplica??o", 3);
+    glutAddMenuEntry("Visualizar Informações", 1);
+    glutAddMenuEntry("Iniciar Animação", 2);
+    glutAddMenuEntry("Fechar Aplicação", 3);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
-    
+     
     // Initialize OpenGL as we like it..
     initRendering();
     // Set up callback functions for key presses
