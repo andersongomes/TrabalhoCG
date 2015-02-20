@@ -440,13 +440,67 @@ void drawScene(void) {
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
+            //TENTATIVA DESENHAR PLANO 1
+            FILE *read;
+            read = fopen("outV2.txt", "r");
+            float a, b, c, aa, bb, cc;
+            
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+            }
+            fclose(read); 
+            read = fopen("outV3.txt", "r");
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &aa ,&bb, &cc);
+            }
+            fclose(read); 
+           
+            glPushMatrix();
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
+               glEnable(GL_BLEND);  // aqui tu habilita
+               
+                glBegin(GL_QUADS);      
+                    glVertex3f(aa, bb, cc);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f(aa + a, bb + b, cc + c);                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(aa * (-1), bb * (-1), cc * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((aa + a) * (-1), (bb + b)  * (-1), (cc + c)  * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(aa * (-1), bb * (-1), cc * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f((aa - a) * (-1),(bb - b) * (-1), (cc - c) * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(aa, bb, cc);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((aa - a),(bb - b), (cc - c));                          
+                glEnd();  
+                glDisable(GL_BLEND);
+            glPopMatrix();    
+            
             glPushMatrix();
                 glColor3f(1.0, 0.4, 0.2); // Vermelho
                 GLUquadricObj *quadric=gluNewQuadric();
                 gluQuadricNormals(quadric, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
-
+            
             if (_xx1_norm < v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm/1.001;
             if (_xx1_norm > v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm*0.999;
             if (_yy1_norm < v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm/1.001;
@@ -492,7 +546,7 @@ void drawScene(void) {
                 gluQuadricNormals(quadric, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
- 
+            
             step++;
 
         }
@@ -524,7 +578,53 @@ void drawScene(void) {
                 gluQuadricNormals(quadric, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
+            
+            //TENTATIVA DESENHAR PLANO 2
+           FILE *read;
+           read = fopen("outV3.txt", "r");
+           float a, b, c;
+           if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+           } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+           }
+           fclose(read);
+           glPushMatrix();
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
+               glEnable(GL_BLEND);  // aqui tu habilita
 
+               glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));                          
+                glEnd();  
+                
+                glDisable(GL_BLEND);
+            glPopMatrix();
+            
             glPushMatrix();
                angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
                glRotatef(angulo, 1, 0, 0);
@@ -532,10 +632,10 @@ void drawScene(void) {
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
                glBegin(GL_QUADS);
-                   glVertex3f(-7, -7, 0);
-                   glVertex3f(-7, 7, 0);
-                   glVertex3f(7, 7, 0);
-                   glVertex3f(7, -7, 0);
+                   //glVertex3f(-7, -7, 0);
+                   //glVertex3f(-7, 7, 0);
+                   //glVertex3f(7, 7, 0);
+                   //glVertex3f(7, -7, 0);
                glEnd();
                glDisable(GL_BLEND);
             glPopMatrix();
@@ -666,15 +766,60 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
 
+            //TENTATIVA DESENHAR PLANO 3
+            FILE *read;
+            read = fopen("outV2.txt", "r");
+            float a, b, c;
+            
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+            }
+            fclose(read); 
+            glPushMatrix();
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
+               glEnable(GL_BLEND);  // aqui tu habilita
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));                          
+                glEnd();
+                glDisable(GL_BLEND);
+            glPopMatrix();
+            
             glPushMatrix();
                glColor4f(1.0, 1.0, 1.0, 0.4f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
                glBegin(GL_QUADS);
-                   glVertex3f(x1, y1, z1);
-                   glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
+                   //glVertex3f(x1, y1, z1);
+                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
+                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
+                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
                glEnd();
                glDisable(GL_BLEND);
             glPopMatrix();
@@ -714,16 +859,63 @@ void drawScene(void) {
                 glDisable(GL_BLEND);
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
-
+            
+            //TENTATIVA DESENHAR PLANO 3
+            FILE *read;
+            read = fopen("outV2.txt", "r");
+            float a, b, c;
+            
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+            }
+            fclose(read); 
+            
+            glPushMatrix();
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
+               glEnable(GL_BLEND);  // aqui tu habilita
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));                          
+                glEnd();
+                
+                glDisable(GL_BLEND);
+            glPopMatrix();
+            
             glPushMatrix();
                glColor4f(1.0, 1.0, 1.0, 0.4f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
                glBegin(GL_QUADS);
-                   glVertex3f(x1, y1, z1);
-                   glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
+                   //glVertex3f(x1, y1, z1);
+                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
+                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
+                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
                glEnd();
                glDisable(GL_BLEND);
             glPopMatrix();
@@ -772,16 +964,61 @@ void drawScene(void) {
                 glDisable(GL_BLEND);
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
-
+            
+            //TENTATIVA DESENHAR PLANO 3
+            FILE *read;
+            read = fopen("outV2.txt", "r");
+            float a, b, c;
+            
+            if(read == NULL){
+                printf("Houve um problema ao tentar abrir o arquivo!");
+            } else {
+                fscanf(read ,"%f %f %f", &a ,&b, &c);
+            }
+            fclose(read); 
+            glPushMatrix();
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
+               glEnable(GL_BLEND);  // aqui tu habilita
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a, b, c);  
+                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
+                glEnd();
+                
+                glBegin(GL_QUADS);                              
+                    glVertex3f(_xx1, _yy1, _zz1);            
+                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
+                    glVertex3f(a * (-1), b * (-1), c * (-1));  
+                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));                          
+                glEnd();
+                glDisable(GL_BLEND);
+            glPopMatrix();
+            
             glPushMatrix();
                glColor4f(1.0, 1.0, 1.0, 0.4f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
                glBegin(GL_QUADS);
-                   glVertex3f(x1, y1, z1);
-                   glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
+                   //glVertex3f(x1, y1, z1);
+                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
+                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
+                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
                glEnd();
                glDisable(GL_BLEND);
             glPopMatrix();
