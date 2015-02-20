@@ -11,9 +11,9 @@ Order=0,2,3
 [Editor_0]
 Open=1
 Top=1
-CursorCol=12
-CursorRow=524
-TopLine=499
+CursorCol=5
+CursorRow=1101
+TopLine=1078
 LeftChar=1
 [Editor_2]
 Open=1
@@ -27,7 +27,7 @@ Open=1
 Top=0
 CursorCol=41
 CursorRow=43
-TopLine=23
+TopLine=22
 LeftChar=1
 [Editor_4]
 Open=0
