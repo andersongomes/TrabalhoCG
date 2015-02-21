@@ -245,6 +245,9 @@ int step = 0;
 float a = 0;
 float b = 0;
 float c = 0;
+char *str1 = new char[30] ;
+char *str2 = new char[30] ;
+char *str3 = new char[30] ;
 /*
 * drawScene() handles the animation and the redrawing of the
 * graphics window contents.
@@ -483,7 +486,6 @@ void drawScene(void) {
             glPopMatrix();
           
             step++;
-
         }
 
         //4? Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
@@ -547,21 +549,6 @@ void drawScene(void) {
  
                 glDisable(GL_BLEND);
             glPopMatrix();    
-            
-            glPushMatrix();
-               angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
-               glRotatef(angulo, 1, 0, 0);
-               glColor4f(1.0, 0.4, 0.2, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(-7, -7, 0);
-                   //glVertex3f(-7, 7, 0);
-                   //glVertex3f(7, 7, 0);
-                   //glVertex3f(7, -7, 0);
-               glEnd();
-               glDisable(GL_BLEND);
-            glPopMatrix();
 
            if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.01;
            if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.01;
@@ -759,53 +746,17 @@ void drawScene(void) {
                 fscanf(read ,"%f %f %f", &a ,&b, &c);
             }
             fclose(read); 
-            
             glPushMatrix();
                glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
                glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
                glEnable(GL_BLEND);  // aqui tu habilita
                 glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1, _yy1, _zz1);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
+                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));            
+                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));
+                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
                     glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);                          
                 glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
-                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1, _yy1, _zz1);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));                          
-                glEnd();
-                
                 glDisable(GL_BLEND);
-            glPopMatrix();
-            
-            glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(x1, y1, z1);
-                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
-               glEnd();
-               glDisable(GL_BLEND);
             glPopMatrix();
 
             if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.01;
@@ -897,19 +848,6 @@ void drawScene(void) {
                 glEnd();
                 glDisable(GL_BLEND);
             glPopMatrix();
-            
-            glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(x1, y1, z1);
-                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
-               glEnd();
-               glDisable(GL_BLEND);
-            glPopMatrix();
 
            RotateAngle = RotateAngle - 0.15f;
            if (RotateAngle < -60.0f) {
@@ -923,6 +861,18 @@ void drawScene(void) {
 
         //10? Passo normaliza o vetor azul
         if (step == 9) {
+            glPushMatrix();
+                glDisable(GL_DEPTH_TEST);
+                glColor4f(1.0, 0.4, 0.2, 0.3f); // Vermelho
+                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+                glEnable(GL_BLEND);
+                GLUquadricObj *quadric=gluNewQuadric();
+                gluQuadricNormals(quadric, GLU_SMOOTH);
+                renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
+                glDisable(GL_BLEND);
+                glEnable(GL_DEPTH_TEST);
+            glPopMatrix();
+
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
@@ -942,18 +892,6 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx3_norm, _yy3_norm, _zz3_norm, radius, 32, quadricFade3);
             glPopMatrix();
 
-            glPushMatrix();
-                glDisable(GL_DEPTH_TEST);
-                glColor4f(1.0, 0.4, 0.2, 0.3f); // Vermelho
-                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-                glEnable(GL_BLEND);
-                GLUquadricObj *quadric=gluNewQuadric();
-                gluQuadricNormals(quadric, GLU_SMOOTH);
-                renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
-                glDisable(GL_BLEND);
-                glEnable(GL_DEPTH_TEST);
-            glPopMatrix();
-
             if (_xx3_norm < v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm/1.001;
             if (_xx3_norm > v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm*0.999;
             if (_yy3_norm < v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm/1.001;
@@ -962,7 +900,10 @@ void drawScene(void) {
             if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm*0.999;
 
             if (fabs(v3_normalizado.vetor[0] - _xx3_norm) < 0.05 && fabs(v3_normalizado.vetor[1] - _yy3_norm) < 0.05 && fabs(v3_normalizado.vetor[2] - _zz3_norm) < 0.05) {
-               step++;
+                sprintf(str1,"q1: (%.3f, %.3f, %.3f)", v1_normalizado.vetor[0]/2, v1_normalizado.vetor[1]/2, v1_normalizado.vetor[2]/2);
+                sprintf(str2,"q2: (%.3f, %.3f, %.3f)", v2_normalizado.vetor[0]/2, v2_normalizado.vetor[1]/2, v2_normalizado.vetor[2]/2);
+                sprintf(str3,"q3: (%.3f, %.3f, %.3f)", v3_normalizado.vetor[0]/2, v3_normalizado.vetor[1]/2, v3_normalizado.vetor[2]/2);
+                step++;
             }
 
         }
@@ -970,10 +911,19 @@ void drawScene(void) {
         //11? Passo desenha todos os vetores em destaque
         if (step == 10) {
             glPushMatrix();
+                glColor3f(1.0, 0.4, 0.2); // Vermelho
+                GLUquadricObj *quadric=gluNewQuadric();
+                gluQuadricNormals(quadric, GLU_SMOOTH);
+                renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
+                output(-8.0, 6.0, str1);
+            glPopMatrix();
+
+            glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
                 GLUquadricObj *quadric2=gluNewQuadric();
                 gluQuadricNormals(quadric2, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx2_norm, _yy2_norm, _zz2_norm, radius, 32, quadric2);
+                output(-8.0, 5.0, str2);
             glPopMatrix();
             
             glPushMatrix();
@@ -981,13 +931,7 @@ void drawScene(void) {
                 GLUquadricObj *quadricFade3=gluNewQuadric();
                 gluQuadricNormals(quadricFade3, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx3_norm, _yy3_norm, _zz3_norm, radius, 32, quadricFade3);
-            glPopMatrix();
-
-            glPushMatrix();
-                glColor3f(1.0, 0.4, 0.2); // Vermelho
-                GLUquadricObj *quadric=gluNewQuadric();
-                gluQuadricNormals(quadric, GLU_SMOOTH);
-                renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
+                output(-8.0, 4.0, str3);
             glPopMatrix();
         }
        
