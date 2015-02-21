@@ -486,7 +486,6 @@ void drawScene(void) {
             glPopMatrix();
           
             step++;
-
         }
 
         //4? Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
@@ -550,21 +549,6 @@ void drawScene(void) {
  
                 glDisable(GL_BLEND);
             glPopMatrix();    
-            
-            glPushMatrix();
-               angulo = anguloEntreVetores(0, 1, 0, novo_xx2, novo_yy2, novo_zz2);
-               glRotatef(angulo, 1, 0, 0);
-               glColor4f(1.0, 0.4, 0.2, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(-7, -7, 0);
-                   //glVertex3f(-7, 7, 0);
-                   //glVertex3f(7, 7, 0);
-                   //glVertex3f(7, -7, 0);
-               glEnd();
-               glDisable(GL_BLEND);
-            glPopMatrix();
 
            if (_xx2 < novo_xx2) _xx2 = _xx2 + 0.01;
            if (_xx2 > novo_xx2) _xx2 = _xx2 - 0.01;
@@ -774,19 +758,6 @@ void drawScene(void) {
                 glEnd();
                 glDisable(GL_BLEND);
             glPopMatrix();
-            
-            glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(x1, y1, z1);
-                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
-               glEnd();
-               glDisable(GL_BLEND);
-            glPopMatrix();
 
             if (_xx3 < novo_xx3) _xx3 = _xx3 + 0.01;
             if (_xx3 > novo_xx3) _xx3 = _xx3 - 0.01;
@@ -877,19 +848,6 @@ void drawScene(void) {
                 glEnd();
                 glDisable(GL_BLEND);
             glPopMatrix();
-            
-            glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(x1, y1, z1);
-                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
-               glEnd();
-               glDisable(GL_BLEND);
-            glPopMatrix();
 
            RotateAngle = RotateAngle - 0.15f;
            if (RotateAngle < -60.0f) {
@@ -942,9 +900,9 @@ void drawScene(void) {
             if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm*0.999;
 
             if (fabs(v3_normalizado.vetor[0] - _xx3_norm) < 0.05 && fabs(v3_normalizado.vetor[1] - _yy3_norm) < 0.05 && fabs(v3_normalizado.vetor[2] - _zz3_norm) < 0.05) {
-                sprintf(str1,"q1: (%.3f, %.3f, %.3f)", _xx1_norm/2, _yy1_norm/2, _zz1_norm/2);
-                sprintf(str2,"q2: (%.3f, %.3f, %.3f)", _xx2_norm/2, _yy2_norm/2, _zz2_norm/2);
-                sprintf(str3,"q3: (%.3f, %.3f, %.3f)", _xx3_norm/2, _yy3_norm/2, _zz3_norm/2);
+                sprintf(str1,"q1: (%.3f, %.3f, %.3f)", v1_normalizado.vetor[0]/2, v1_normalizado.vetor[1]/2, v1_normalizado.vetor[2]/2);
+                sprintf(str2,"q2: (%.3f, %.3f, %.3f)", v2_normalizado.vetor[0]/2, v2_normalizado.vetor[1]/2, v2_normalizado.vetor[2]/2);
+                sprintf(str3,"q3: (%.3f, %.3f, %.3f)", v3_normalizado.vetor[0]/2, v3_normalizado.vetor[1]/2, v3_normalizado.vetor[2]/2);
                 step++;
             }
 
