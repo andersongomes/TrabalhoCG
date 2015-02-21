@@ -1,13 +1,14 @@
 #include "vetor.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 
 void Vetor::inicializaVetor(float x, float y, float z){
     vetor[0] = x;
     vetor[1] = y;
-    vetor[2] = z;  
+    vetor[2] = z;
     /*
     static int contador=1;
-    
+
     cout<<"Entre com o valor do Vetor "<<contador<<":"<<endl;
     for(int i=0;i<3;i++){
         if(i==0){
@@ -40,9 +41,9 @@ void Vetor::showVetor(int i){
    }else if(i == 2){
         saida = fopen("outV2.txt", "w");
    }else if(i == 3){
-        saida = fopen("outV3.txt", "w"); 
+        saida = fopen("outV3.txt", "w");
    }
-   
+
    if(saida != NULL){
        fprintf(saida, "%.2f %.2f %.2f", vetor[0], vetor[1], vetor[2]);
    }
