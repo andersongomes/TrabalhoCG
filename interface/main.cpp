@@ -583,6 +583,9 @@ void drawScene(void) {
            if (_zz2 > novo_zz2) _zz2 = _zz2 - 0.01;
            if (fabs(_xx2 - novo_xx2) < 0.05 && fabs(_yy2 - novo_yy2) < 0.05 && fabs(_zz2 - novo_zz2) < 0.05) {
               step++;
+              _xx2_norm = novo_xx2;
+              _yy2_norm = novo_yy2;
+              _zz2_norm = novo_zz2;
               Sleep(1000);
            }
         }
@@ -621,10 +624,6 @@ void drawScene(void) {
             glPopMatrix();
 
             step++;
-            _xx2_norm = novo_xx2;
-            _yy2_norm = novo_yy2;
-            _zz2_norm = novo_zz2;
-
         }
 
         //6? Passo normaliza o vetor amarelo
