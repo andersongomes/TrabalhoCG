@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1424540593 source:c:\users\kellton\desktop\cg\trabalhocg\interface\main.cpp
+	<windows.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	<cmath>
+	<iostream>
+	"util.h"
+	"vetor.h"
+
+1423323664 c:\users\kellton\desktop\cg\trabalhocg\interface\util.h
+	<stdio.h>
+
+1421492570 c:\users\kellton\desktop\cg\trabalhocg\interface\vetor.h
+	<iostream>
+	<math.h>
+
+1423323649 source:c:\users\kellton\desktop\cg\trabalhocg\interface\vetor.cpp
+	"vetor.h"
+	<stdio.h>
+

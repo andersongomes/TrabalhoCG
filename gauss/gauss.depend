@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1424542633 source:c:\users\kellton\desktop\gauss\main.cpp
+	<cstdlib>
+	<iostream>
+	<stdio.h>
+
