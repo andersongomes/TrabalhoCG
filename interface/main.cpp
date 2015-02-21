@@ -375,7 +375,7 @@ void drawScene(void) {
         
         double angulo;
         
-        //1° Passo Rotaciona a Camera
+        //1? Passo Rotaciona a Camera
         if (step == 0) {
            RotateAngle = RotateAngle + 0.15f;
            if (RotateAngle > 40.0f) {
@@ -402,7 +402,7 @@ void drawScene(void) {
         v3_normalizado = normalizaVetor(_xx3, _yy3, _zz3);
 
 
-        //2° Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
+        //2? Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
         if (step == 1) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -461,7 +461,7 @@ void drawScene(void) {
 
         }
 
-        //3º Passo desenha os vetores destacando o vermelho
+        //3? Passo desenha os vetores destacando o vermelho
         if (step == 2) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -493,66 +493,12 @@ void drawScene(void) {
                 gluQuadricNormals(quadric, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
-
-            //TENTATIVA DESENHAR PLANO 1
-            FILE *read;
-            read = fopen("outV2.txt", "r");
-            float a, b, c, aa, bb, cc;
-            
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &a ,&b, &c);
-            }
-            fclose(read); 
-            read = fopen("outV3.txt", "r");
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &aa ,&bb, &cc);
-            }
-            fclose(read); 
-           
-            glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
-               glEnable(GL_BLEND);  // aqui tu habilita
-               
-                glBegin(GL_QUADS);      
-                    glVertex3f(aa, bb, cc);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
-                    glVertex3f(aa + a, bb + b, cc + c);                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(aa * (-1), bb * (-1), cc * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((aa + a) * (-1), (bb + b)  * (-1), (cc + c)  * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(aa * (-1), bb * (-1), cc * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
-                    glVertex3f((aa - a) * (-1),(bb - b) * (-1), (cc - c) * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(aa, bb, cc);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((aa - a),(bb - b), (cc - c));                          
-                glEnd();  
-                glDisable(GL_BLEND);
-            glPopMatrix();    
-            
+          
             step++;
 
         }
 
-        //4º Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
+        //4? Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
         if (step == 3) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -600,37 +546,17 @@ void drawScene(void) {
             fclose(read); 
            
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
                glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
                glEnable(GL_BLEND);  // aqui tu habilita
                
                 glBegin(GL_QUADS);      
-                    glVertex3f(aa, bb, cc);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
+                    glVertex3f((aa - a),(bb - b), (cc - c));             
+                    glVertex3f((aa + a) * (-1), (bb + b)  * (-1), (cc + c)  * (-1));
+                    glVertex3f((aa - a) * (-1),(bb - b) * (-1), (cc - c) * (-1));
                     glVertex3f(aa + a, bb + b, cc + c);                          
                 glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(aa * (-1), bb * (-1), cc * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((aa + a) * (-1), (bb + b)  * (-1), (cc + c)  * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(aa * (-1), bb * (-1), cc * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
-                    glVertex3f((aa - a) * (-1),(bb - b) * (-1), (cc - c) * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(aa, bb, cc);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((aa - a),(bb - b), (cc - c));                          
-                glEnd();  
+ 
                 glDisable(GL_BLEND);
             glPopMatrix();    
             
@@ -661,7 +587,7 @@ void drawScene(void) {
            }
         }
 
-        //5º Passo remove o plano e destaca apenas o vetor amarelo
+        //5? Passo remove o plano e destaca apenas o vetor amarelo
         if (step == 4) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -701,7 +627,7 @@ void drawScene(void) {
 
         }
 
-        //6º Passo normaliza o vetor amarelo
+        //6? Passo normaliza o vetor amarelo
         if (step == 5) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -747,7 +673,7 @@ void drawScene(void) {
 
         }
 
-        //7º Passo destaca o vetor vermelho e amarelo e desenha um plano entre eles
+        //7? Passo destaca o vetor vermelho e amarelo e desenha um plano entre eles
         if (step == 6) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -787,56 +713,22 @@ void drawScene(void) {
             }
             fclose(read); 
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
                glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
                glEnable(GL_BLEND);  // aqui tu habilita
                 glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1, _yy1, _zz1);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
+                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));            
+                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));
+                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
                     glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);                          
                 glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a, b, c);  
-                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));                          
-                glEnd();
-                
-                glBegin(GL_QUADS);                              
-                    glVertex3f(_xx1, _yy1, _zz1);            
-                    glVertex3f( 0.0f, 0.0f, 0.0f);                       
-                    glVertex3f(a * (-1), b * (-1), c * (-1));  
-                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));                          
-                glEnd();
                 glDisable(GL_BLEND);
-            glPopMatrix();
-            
-            glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-               glEnable(GL_BLEND);
-               glBegin(GL_QUADS);
-                   //glVertex3f(x1, y1, z1);
-                   //glVertex3f(_xx1_norm, _yy1_norm, _zz1_norm);
-                   //glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
-                   //glVertex3f(_xx2_norm, _yy2_norm, _zz2_norm);
-               glEnd();
-               glDisable(GL_BLEND);
             glPopMatrix();
 
             step++;
         }
 
-        //8º Passo destaca o vetor azul e coloca na nova posicao
+        //8? Passo destaca o vetor azul e coloca na nova posicao
         if (step == 7) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -882,7 +774,7 @@ void drawScene(void) {
             fclose(read); 
             
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
                glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
                glEnable(GL_BLEND);  // aqui tu habilita
                 glBegin(GL_QUADS);                              
@@ -940,7 +832,7 @@ void drawScene(void) {
             }
         }
 
-        //9º Rotaciona a camera, mantendo o destaque ao vetor azul
+        //9? Rotaciona a camera, mantendo o destaque ao vetor azul
 
         if (step == 8) {
             glPushMatrix();
@@ -986,7 +878,7 @@ void drawScene(void) {
             }
             fclose(read); 
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro é a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
+               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
                glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
                glEnable(GL_BLEND);  // aqui tu habilita
                 glBegin(GL_QUADS);                              
@@ -1042,7 +934,7 @@ void drawScene(void) {
            }
         }
 
-        //10º Passo normaliza o vetor azul
+        //10? Passo normaliza o vetor azul
         if (step == 9) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -1088,7 +980,7 @@ void drawScene(void) {
 
         }
 
-        //11º Passo desenha todos os vetores em destaque
+        //11? Passo desenha todos os vetores em destaque
         if (step == 10) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -1175,7 +1067,7 @@ void resizeWindow(int w, int h) {
     gluPerspective(15.0, aspectRatio, 25.0, 45.0);
 }
 
-//TODO Adicionar as validações aqui para não poluir o código 
+//TODO Adicionar as valida??es aqui para n?o poluir o c?digo 
 void readParameters(){ 
     int i = 1;
     float x, y, z;
@@ -1211,9 +1103,9 @@ void readParameters(){
 }
 
 void executaGramSchimidt(){
-    //Adicionar validações:
+    //Adicionar valida??es:
     //Entrada nula
-    //Vetores com valores inválidos ou muito divergentes
+    //Vetores com valores inv?lidos ou muito divergentes
     readParameters();
 
     Vetor vetor1, vetor2, vetor3;
@@ -1225,7 +1117,7 @@ void executaGramSchimidt(){
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
     
     
-    //TODO Reduzir o tamanho dos vetores para 2 para ficar interessante na animação
+    //TODO Reduzir o tamanho dos vetores para 2 para ficar interessante na anima??o
      
 }
 
@@ -1316,7 +1208,7 @@ int main(int argc, char** argv) {
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
 
 
-    //Imprimi os parâmetros dos vetores
+    //Imprimi os par?metros dos vetores
     /*
     FILE *saida;
     saida = fopen("out.txt", "w");
@@ -1333,14 +1225,14 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(200, 60);
     // Tamanho da Janela
     glutInitWindowSize(800, 600);
-    // Título da Janela
+    // T?tulo da Janela
     glutCreateWindow("Gram Schmidt");
     
-    // Criar menu acessível através do botão direito do mouse
+    // Criar menu acess?vel atrav?s do bot?o direito do mouse
     int menuRightButton = glutCreateMenu(menu);
-    glutAddMenuEntry("Visualizar Informações", 1);
-    glutAddMenuEntry("Iniciar Animação", 2);
-    glutAddMenuEntry("Fechar Aplicação", 3);
+    glutAddMenuEntry("Visualizar Informa??es", 1);
+    glutAddMenuEntry("Iniciar Anima??o", 2);
+    glutAddMenuEntry("Fechar Aplica??o", 3);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
      
     // Initialize OpenGL as we like it..
