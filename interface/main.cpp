@@ -449,8 +449,8 @@ void drawScene(void) {
         //Normalizacao
         Vetor v1_normalizado, v2_normalizado, v3_normalizado;
         v1_normalizado = normalizaVetor(_xx1, _yy1, _zz1);
-        v2_normalizado = normalizaVetor(_xx2, _yy2, _zz2);
-        v3_normalizado = normalizaVetor(_xx3, _yy3, _zz3);
+        v2_normalizado = normalizaVetor(novo_xx2, novo_yy2, novo_zz2);
+        v3_normalizado = normalizaVetor(novo_xx3, novo_yy3, novo_zz3);
 
 
         //2? Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
@@ -487,12 +487,12 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
 
-            if (_xx1_norm < v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm/1.001;
-            if (_xx1_norm > v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm*0.999;
-            if (_yy1_norm < v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm/1.001;
-            if (_yy1_norm > v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm*0.999;
-            if (_zz1_norm < v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm/1.001;
-            if (_zz1_norm > v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm*0.999;
+            if (_xx1_norm < v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm + 0.001;
+            if (_xx1_norm > v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm - 0.001;
+            if (_yy1_norm < v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm + 0.001;
+            if (_yy1_norm > v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm - 0.001;
+            if (_zz1_norm < v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm + 0.001;
+            if (_zz1_norm > v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm - 0.001;
 
             if (fabs(v1_normalizado.vetor[0] - _xx1_norm) < 0.05 && fabs(v1_normalizado.vetor[1] - _yy1_norm) < 0.05 && fabs(v1_normalizado.vetor[2] - _zz1_norm) < 0.05) {
                step++;
@@ -682,12 +682,12 @@ void drawScene(void) {
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
-            if (_xx2_norm < v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm/1.001;
-            if (_xx2_norm > v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm*0.999;
-            if (_yy2_norm < v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm/1.001;
-            if (_yy2_norm > v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm*0.999;
-            if (_zz2_norm < v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm/1.001;
-            if (_zz2_norm > v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm*0.999;
+            if (_xx2_norm < v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm + 0.001;
+            if (_xx2_norm > v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm - 0.001;
+            if (_yy2_norm < v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm + 0.001;
+            if (_yy2_norm > v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm - 0.001;
+            if (_zz2_norm < v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm + 0.001;
+            if (_zz2_norm > v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm - 0.001;
 
             if (fabs(v2_normalizado.vetor[0] - _xx2_norm) < 0.05 && fabs(v2_normalizado.vetor[1] - _yy2_norm) < 0.05 && fabs(v2_normalizado.vetor[2] - _zz2_norm) < 0.05) {
                step++;
@@ -940,12 +940,12 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx3_norm, _yy3_norm, _zz3_norm, radius, 32, quadricFade3);
             glPopMatrix();
 
-            if (_xx3_norm < v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm/1.001;
-            if (_xx3_norm > v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm*0.999;
-            if (_yy3_norm < v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm/1.001;
-            if (_yy3_norm > v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm*0.999;
-            if (_zz3_norm < v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm/1.001;
-            if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm*0.999;
+            if (_xx3_norm < v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm + 0.001;
+            if (_xx3_norm > v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm - 0.001;
+            if (_yy3_norm < v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm + 0.001;
+            if (_yy3_norm > v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm - 0.001;
+            if (_zz3_norm < v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm + 0.001;
+            if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm - 0.001;
 
             if (fabs(v3_normalizado.vetor[0] - _xx3_norm) < 0.05 && fabs(v3_normalizado.vetor[1] - _yy3_norm) < 0.05 && fabs(v3_normalizado.vetor[2] - _zz3_norm) < 0.05) {
                 sprintf(str1,"q1: (%.3f, %.3f, %.3f)", v1_normalizado.vetor[0]/2, v1_normalizado.vetor[1]/2, v1_normalizado.vetor[2]/2);
