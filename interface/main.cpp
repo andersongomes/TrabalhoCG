@@ -330,7 +330,7 @@ void drawScene(void) {
         float radius = 0.03+(sin(t)/2+0.5)/5;
         
         //Chamada da funcao que desenha os eixos x,y,z
-        drawAxis();
+        if (step < 10) drawAxis();
         
         //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
         if (step < 1) {
