@@ -161,7 +161,12 @@ double anguloEntreVetores(double x1, double y1, double z1, double x2, double y2,
 Vetor normalizaVetor(double x, double y, double z) {
     Vetor normalizado;
     double denominador;
-
+    if(sqrt((x*x) + (y*y) + (z*z)) == 1){
+         normalizado.vetor[0] = x;
+         normalizado.vetor[1] = y;
+         normalizado.vetor[2] = z;              
+         return normalizado;
+    }
     denominador = sqrt((x*x) + (y*y) + (z*z));
     normalizado.vetor[0] = (x/denominador) * 2;
     normalizado.vetor[1] = (y/denominador) * 2;
