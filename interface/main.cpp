@@ -406,18 +406,6 @@ void drawScene(void) {
         if (step == 1) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
-                glColor4f(1.0, 0.4, 0.2, 0.3f); // Vermelho
-                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-                glEnable(GL_BLEND);
-                GLUquadricObj *quadricFade1=gluNewQuadric();
-                gluQuadricNormals(quadricFade1, GLU_SMOOTH);
-                renderVector(x1, y1, z1, _xx1, _yy1, _zz1, radius, 32, quadricFade1);
-                glDisable(GL_BLEND);
-                glEnable(GL_DEPTH_TEST);
-            glPopMatrix();
-
-            glPushMatrix();
-                glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
                 glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                 glEnable(GL_BLEND);
