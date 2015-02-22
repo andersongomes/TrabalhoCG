@@ -40,7 +40,7 @@ float _zz3 = 0;
 double rotate_by_key = 0;
 double rotate_x = 0.7;
 
-// Desenha um cilindro entre dois pontos
+// Desenha um vetor entre dois pontos
 void renderVector(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric){
    float vx = x2-x1;
    float vy = y2-y1;
@@ -64,12 +64,12 @@ void renderVector(float x1, float y1, float z1, float x2,float y2, float z2, flo
    gluQuadricOrientation(quadric,GLU_OUTSIDE);
    gluCylinder(quadric, radius, radius, v-0.5, subdivisions, 1);
 
-   //desenha uma tampa
+   //desenha a tampa
    gluQuadricOrientation(quadric,GLU_INSIDE);
    gluDisk(quadric, 0.0, radius, subdivisions, 1);
    glTranslatef(0, 0, v-0.5);
 
-   //desenha a outra tampa
+   //desenha um cone
    gluQuadricOrientation(quadric,GLU_OUTSIDE);
    //gluDisk(quadric, 0.0, radius, subdivisions, 1);
    gluCylinder(quadric, radius+0.1, 0, 0.5, subdivisions, 1);
@@ -78,6 +78,7 @@ void renderVector(float x1, float y1, float z1, float x2,float y2, float z2, flo
 
 //Resultados globais
 Vetor resultado1, resultado2, parcial;
+
 //Metodos de execucao de Gram Schimit
 void gramSchimidt(Vetor v1, Vetor v2,Vetor v3){
     //Vetor resultado1, resultado2;
@@ -159,12 +160,12 @@ bool gauss(Vetor v1,Vetor v2,Vetor v3){
 
 void inicializacaoGramSchimidt(Vetor v1,Vetor v2,Vetor v3){
 	if(gauss(v1,v2,v3)==true){
-    cout<<"v1:";
-    //Insere os dados do vetor 1 no txt
-    v1.showVetor(1);
-    gramSchimidt(v1,v2,v3);
+        cout<<"v1:";
+        //Insere os dados do vetor 1 no txt
+        v1.showVetor(1);
+        gramSchimidt(v1,v2,v3);
 	}
-	else{
+    else{
 		exit(0);
 	}
 }
@@ -201,6 +202,14 @@ double anguloEntreVetores(double x1, double y1, double z1, double x2, double y2,
     return ans;
 }
 
+double norma(double x, double y, double z) {
+    double norma;
+
+    norma = sqrt((x*x) + (y*y) + (z*z));
+
+    return norma;
+}
+
 Vetor normalizaVetor(double x, double y, double z) {
     Vetor normalizado;
     double denominador;
@@ -210,7 +219,7 @@ Vetor normalizaVetor(double x, double y, double z) {
          normalizado.vetor[2] = z;
          return normalizado;
     }
-    denominador = sqrt((x*x) + (y*y) + (z*z));
+    denominador = norma(x, y, z);
     normalizado.vetor[0] = (x/denominador) * 2;
     normalizado.vetor[1] = (y/denominador) * 2;
     normalizado.vetor[2] = (z/denominador) * 2;
@@ -227,40 +236,38 @@ void output(float x, float y, char *string) {
   }
 }
 
-// Draw the lines (x,y,z)
+// Desenha os eixos coordenados (x, y, z)
 void drawAxis(void) {
-    glPushMatrix();     // It is important to push the Matrix before calling
-
-    // Draw the positive side of the lines x,y,z
-    glBegin(GL_LINES);
-        glColor3f (0.0, 1.0, 0.0); // Green for x axis
-        glVertex3f(0,0,0);
-        glVertex3f(5,0,0);
-        glColor3f(1.0,0.0,0.0); // Red for y axis
-        glVertex3f(0,0,0);
-        glVertex3f(0,5,0);
-        glColor3f(0.0,0.0,1.0); // Blue for z axis
-        glVertex3f(0,0,0);
-        glVertex3f(0,0,5);
-    glEnd();
-
-    // Dotted lines for the negative sides of x,y,z
-    glEnable(GL_LINE_STIPPLE);  // Enable line stipple to use a
-    // Dotted pattern for the lines
-    glLineStipple(1, 0x0101);   // Dotted stipple pattern for the lines
-    glBegin(GL_LINES);
-        glColor3f (0.0, 1.0, 0.0);  // Green for x axis
-        glVertex3f(-5,0,0);
-        glVertex3f(0,0,0);
-        glColor3f(1.0,0.0,0.0);     // Red for y axis
-        glVertex3f(0,0,0);
-        glVertex3f(0,-5,0);
-        glColor3f(0.0,0.0,1.0);     // Blue for z axis
-        glVertex3f(0,0,0);
-        glVertex3f(0,0,-5);
-    glEnd();
-    glDisable(GL_LINE_STIPPLE);     // Disable the line stipple
-    glPopMatrix();      // Don't forget to pop the Matrix
+    glPushMatrix();
+        // Desenha a linha do lado positivo x,y,z
+        glBegin(GL_LINES);
+            glColor3f (0.0, 1.0, 0.0); // Verde para o eixo x
+            glVertex3f(0,0,0);
+            glVertex3f(5,0,0);
+            glColor3f(1.0,0.0,0.0); // Vermelho para o eixo y
+            glVertex3f(0,0,0);
+            glVertex3f(0,5,0);
+            glColor3f(0.0,0.0,1.0); // Azul para o eixo z
+            glVertex3f(0,0,0);
+            glVertex3f(0,0,5);
+        glEnd();
+    
+        // Linha pontilhada para o lado negativo x,y,z
+        glEnable(GL_LINE_STIPPLE);  // Habilita o line stipple para usar um padrao pontilhado
+        glLineStipple(1, 0x0101);   // Define o padrao de pontilhado da linha
+        glBegin(GL_LINES);
+            glColor3f (0.0, 1.0, 0.0);  // Verde para o eixo x
+            glVertex3f(-5,0,0);
+            glVertex3f(0,0,0);
+            glColor3f(1.0,0.0,0.0);     // Vermelho para o eixo y
+            glVertex3f(0,0,0);
+            glVertex3f(0,-5,0);
+            glColor3f(0.0,0.0,1.0);     // Azul para o eixo z
+            glVertex3f(0,0,0);
+            glVertex3f(0,0,-5);
+        glEnd();
+        glDisable(GL_LINE_STIPPLE);     // Desabilita o line stipple
+    glPopMatrix();
 
     // Desenha os cones nos eixos
 	glColor3f( 0.0f, 1.0f, 0.0f);
@@ -289,50 +296,64 @@ void drawAxis(void) {
 
 }
 
+// Variavel para os passos da animacao
 int step = 0;
+
 float a = 0;
 float b = 0;
 float c = 0;
-char *str1 = new char[30] ;
-char *str2 = new char[30] ;
-char *str3 = new char[30] ;
+
+// Textos que aparecem na tela
+char *str1 = new char[30];
+char *str2 = new char[30];
+char *str3 = new char[30];
+char *V1 = new char[30];
+char *V2 = new char[30];
+char *V3 = new char[30];
 /*
-* drawScene() handles the animation and the redrawing of the
-* graphics window contents.
+* drawScene() cuida da animacao, desenho e redesenho do conteudo grafico
 */
 
 double _xx1_norm, _yy1_norm, _zz1_norm;
 double _xx2_norm, _yy2_norm, _zz2_norm;
 double _xx3_norm, _yy3_norm, _zz3_norm;
 
-int v1_normal, v2_normal, v3_normal;
-
+// Flag para a Splash Screen
 int splash_flag = 1;
 
 void drawScene(void) {
-    //Desenha a Splash Scream
+    //Desenha a Splash Screen
     if (splash_flag) {
-        // Clear the rendering window
+        // Limpa a janela de renderizacao
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Add ambient light
+        // Adiciona luz ambiente
         GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 
-        // Rotate the image
-        glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
-        glLoadIdentity(); // Initialize to the identity
+        // Rotaciona a imagem
+        glMatrixMode(GL_MODELVIEW); // Matriz atual afeta a posicao dos objetos
+        glLoadIdentity(); // Inicializa para a identidade
         // Zoom da camera
         glScalef(rotate_x, rotate_x, 1.0f);
         //glScalef(1.0f, 1.0f, rotate_x);
         glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
 
-        glTranslatef(0.0, -0.3, -35.0); // Translate from origin (in front of viewer)
-        glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
-        glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
+        glTranslatef(0.0, -0.3, -35.0); // Translada a partir da origem (em frente ao espectador)
+        glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotaciona ao redor do eixo y
+        glRotatef(Azimuth, 1.0, 0.0, 0.0); // Define o angulo azimuth (distancia angular medida sobre o horizonte)
         glDisable(GL_CULL_FACE);
 
         glPushMatrix();
+            glColor3f(1.0, 0.4, 0.2); // Vermelho
+            sprintf(V1,"V1: (%.1f, %.1f, %.1f)", _xx1, _yy1, _zz1);
+            output(-6.5, 5.0, V1);
+            glColor3f(1.0, 1.0, 0.2); // Amarelo
+            sprintf(V2,"V2: (%.1f, %.1f, %.1f)", _xx2, _yy2, _zz2);
+            output(-1.5, 5.0, V2);
+            glColor3f(0.0, 0.2, 0.7); // Azul
+            sprintf(V3,"V3: (%.1f, %.1f, %.1f)", _xx3, _yy3, _zz3);
+            output(3.5, 5.0, V3);
             glColor3f(1.0f, 1.0f, 1.0f);
         	output(-2.7, 1.0, "Algoritmo de Gram-Schmidt");
             glColor3f(0.6f, 0.6f, 0.6f);
@@ -340,37 +361,37 @@ void drawScene(void) {
         	output(-6.5, -2, "Universidade Estadual do Ceara");
         	output(-6.5, -2.5, "Professor: Thelmo de Araujo");
         	output(-6.5, -3, "Equipe: Rodrigo Magalhaes, Anderson Gomes e Kellton Leitao");
-        	output(-6.5, -4.5, "Pressione a tecla \"P\" para iniciar.");
+        	output(-6.5, -4.5, "Pressione a tecla \"p\" para iniciar.");
         glPopMatrix();
 
         splash_flag = 0;
         glutPostRedisplay();
-        // Flush the pipeline, swap the buffers
+        // Limpa o pipeline, troca os buffers
         glFlush();
         glutSwapBuffers();
     }
 
     // Inicia o gram schmidt
     if(!paused){
-        // Clear the rendering window
+        // Limpa a janela de renderizacao
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Add ambient light
-        GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
+        // Adiciona luz ambiente
+        GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; // Cor(0.2, 0.2, 0.2)
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 
-        // Rotate the image
-        glMatrixMode(GL_MODELVIEW); // Current matrix affects objects positions
-        glLoadIdentity(); // Initialize to the identity
+        // Rotaciona a imagem
+        glMatrixMode(GL_MODELVIEW); // Matriz atual afeta a posicao dos objetos
+        glLoadIdentity(); // Inicializa para a identidade
 
         // Zoom da camera
         glScalef(rotate_x, rotate_x, 1.0f);
         //glScalef(1.0f, 1.0f, rotate_x);
         glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
 
-        glTranslatef(0.0, -0.3, -35.0); // Translate from origin (in front of viewer)
-        glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotate around y-axis
-        glRotatef(Azimuth, 1.0, 0.0, 0.0); // Set Azimuth angle
+        glTranslatef(0.0, -0.3, -35.0); // Translada a partir da origem (em frente ao espectador)
+        glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotaciona ao redor do eixo y
+        glRotatef(Azimuth, 1.0, 0.0, 0.0); // Define o angulo azimuth (distancia angular medida sobre o horizonte)
         glDisable(GL_CULL_FACE);
 
         //Define os pontos de origem
@@ -383,8 +404,8 @@ void drawScene(void) {
         //Chamada da funcao que desenha os eixos x,y,z
         if (step < 10) drawAxis();
 
-        //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
         if (step < 1) {
+            //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
             glPushMatrix();
                 glColor3f(1.0, 0.4, 0.2); // Vermelho
                 GLUquadricObj *quadric=gluNewQuadric();
@@ -415,18 +436,16 @@ void drawScene(void) {
         float novo_zz2 = resultado1.vetor[2];
 
         // Posicao parcial do vetor 3
-        float parcial_xx3 = parcial.vetor[0];
-        float parcial_yy3 = parcial.vetor[1];
-        float parcial_zz3 = parcial.vetor[2];
+        // float parcial_xx3 = parcial.vetor[0];
+        // float parcial_yy3 = parcial.vetor[1];
+        // float parcial_zz3 = parcial.vetor[2];
 
         // Nova posicao do vetor 3
         float novo_xx3 = resultado2.vetor[0];
         float novo_yy3 = resultado2.vetor[1];
         float novo_zz3 = resultado2.vetor[2];
 
-        double angulo;
-
-        //1? Passo Rotaciona a Camera
+        // 1o Passo Rotaciona a Camera
         if (step == 0) {
            RotateAngle = RotateAngle + 0.15f;
            if (RotateAngle > 40.0f) {
@@ -446,14 +465,14 @@ void drawScene(void) {
            }
         }
 
-        //Normalizacao
+        // Normalizacao
         Vetor v1_normalizado, v2_normalizado, v3_normalizado;
         v1_normalizado = normalizaVetor(_xx1, _yy1, _zz1);
         v2_normalizado = normalizaVetor(novo_xx2, novo_yy2, novo_zz2);
         v3_normalizado = normalizaVetor(novo_xx3, novo_yy3, novo_zz3);
 
 
-        //2? Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
+        //2o Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
         if (step == 1) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -487,20 +506,30 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
 
-            if (_xx1_norm < v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm + 0.001;
-            if (_xx1_norm > v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm - 0.001;
-            if (_yy1_norm < v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm + 0.001;
-            if (_yy1_norm > v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm - 0.001;
-            if (_zz1_norm < v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm + 0.001;
-            if (_zz1_norm > v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm - 0.001;
+            if (norma(_xx1, _yy1, _zz1) < norma(v1_normalizado.vetor[0], v1_normalizado.vetor[1], v1_normalizado.vetor[2])) {
+                if (_xx1_norm < v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm*1.001;
+                if (_xx1_norm > v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm/0.999;
+                if (_yy1_norm < v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm*1.001;
+                if (_yy1_norm > v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm/0.999;
+                if (_zz1_norm < v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm*1.001;
+                if (_zz1_norm > v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm/0.999;
+            }
+            else {
+                if (_xx1_norm < v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm/1.001;
+                if (_xx1_norm > v1_normalizado.vetor[0]) _xx1_norm = _xx1_norm*0.999;
+                if (_yy1_norm < v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm/1.001;
+                if (_yy1_norm > v1_normalizado.vetor[1]) _yy1_norm = _yy1_norm*0.999;
+                if (_zz1_norm < v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm/1.001;
+                if (_zz1_norm > v1_normalizado.vetor[2]) _zz1_norm = _zz1_norm*0.999;
+            }
 
-            if (fabs(v1_normalizado.vetor[0] - _xx1_norm) < 0.05 && fabs(v1_normalizado.vetor[1] - _yy1_norm) < 0.05 && fabs(v1_normalizado.vetor[2] - _zz1_norm) < 0.05) {
+            if (fabs(v1_normalizado.vetor[0] - _xx1_norm) < 0.25 && fabs(v1_normalizado.vetor[1] - _yy1_norm) < 0.25 && fabs(v1_normalizado.vetor[2] - _zz1_norm) < 0.25) {
                step++;
             }
 
         }
 
-        //3? Passo desenha os vetores destacando o vermelho
+        //3o Passo desenha os vetores e o primeiro plano destacando o vetor vermelho
         if (step == 2) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -533,10 +562,26 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
 
+            // DESENHA O PLANO 1
+            glPushMatrix();
+               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
+
+                glBegin(GL_QUADS);
+                    glVertex3f((novo_xx3 - novo_xx2) * 2,(novo_yy3 - novo_yy2) * 2, (novo_zz3 - novo_zz2) * 2);
+                    glVertex3f((novo_xx3 + novo_xx2) * (-1) * 2, (novo_yy3 + novo_yy2)  * (-1) * 2, (novo_zz3 + novo_zz2)  * (-1) * 2);
+                    glVertex3f((novo_xx3 - novo_xx2) * (-1) * 2,(novo_yy3 - novo_yy2) * (-1) * 2, (novo_zz3 - novo_zz2) * (-1) * 2);
+                    glVertex3f(novo_xx3 + novo_xx2 * 2, novo_yy3 + novo_yy2 * 2, novo_zz3 + novo_zz2 * 2);
+                glEnd();
+
+                glDisable(GL_BLEND);
+            glPopMatrix();
+
             step++;
         }
 
-        //4? Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
+        //4o Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
         if (step == 3) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -564,35 +609,17 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
 
-            //TENTATIVA DESENHAR PLANO 1
-            FILE *read;
-            read = fopen("outV2.txt", "r");
-            float a, b, c, aa, bb, cc;
-
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &a ,&b, &c);
-            }
-            fclose(read);
-            read = fopen("outV3.txt", "r");
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &aa ,&bb, &cc);
-            }
-            fclose(read);
-
+            // DESENHA O PLANO 1
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
-               glEnable(GL_BLEND);  // aqui tu habilita
+               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
 
                 glBegin(GL_QUADS);
-                    glVertex3f((aa - a),(bb - b), (cc - c));
-                    glVertex3f((aa + a) * (-1), (bb + b)  * (-1), (cc + c)  * (-1));
-                    glVertex3f((aa - a) * (-1),(bb - b) * (-1), (cc - c) * (-1));
-                    glVertex3f(aa + a, bb + b, cc + c);
+                    glVertex3f((novo_xx3 - novo_xx2) * 2,(novo_yy3 - novo_yy2) * 2, (novo_zz3 - novo_zz2) * 2);
+                    glVertex3f((novo_xx3 + novo_xx2) * (-1) * 2, (novo_yy3 + novo_yy2)  * (-1) * 2, (novo_zz3 + novo_zz2)  * (-1) * 2);
+                    glVertex3f((novo_xx3 - novo_xx2) * (-1) * 2,(novo_yy3 - novo_yy2) * (-1) * 2, (novo_zz3 - novo_zz2) * (-1) * 2);
+                    glVertex3f(novo_xx3 + novo_xx2 * 2, novo_yy3 + novo_yy2 * 2, novo_zz3 + novo_zz2 * 2);
                 glEnd();
 
                 glDisable(GL_BLEND);
@@ -613,7 +640,7 @@ void drawScene(void) {
            }
         }
 
-        //5? Passo remove o plano e destaca apenas o vetor amarelo
+        // 5o Passo remove o plano e destaca apenas o vetor amarelo
         if (step == 4) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -649,7 +676,7 @@ void drawScene(void) {
             step++;
         }
 
-        //6? Passo normaliza o vetor amarelo
+        // 6o Passo normaliza o vetor amarelo
         if (step == 5) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -682,20 +709,30 @@ void drawScene(void) {
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
-            if (_xx2_norm < v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm + 0.001;
-            if (_xx2_norm > v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm - 0.001;
-            if (_yy2_norm < v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm + 0.001;
-            if (_yy2_norm > v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm - 0.001;
-            if (_zz2_norm < v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm + 0.001;
-            if (_zz2_norm > v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm - 0.001;
+            if (norma(novo_xx2, novo_yy2, novo_zz2) < norma(v2_normalizado.vetor[0], v2_normalizado.vetor[1], v2_normalizado.vetor[2])) {
+                if (_xx2_norm < v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm*1.001;
+                if (_xx2_norm > v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm/0.999;
+                if (_yy2_norm < v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm*1.001;
+                if (_yy2_norm > v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm/0.999;
+                if (_zz2_norm < v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm*1.001;
+                if (_zz2_norm > v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm/0.999;
+            }
+            else {
+                if (_xx2_norm < v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm/1.001;
+                if (_xx2_norm > v2_normalizado.vetor[0]) _xx2_norm = _xx2_norm*0.999;
+                if (_yy2_norm < v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm/1.001;
+                if (_yy2_norm > v2_normalizado.vetor[1]) _yy2_norm = _yy2_norm*0.999;
+                if (_zz2_norm < v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm/1.001;
+                if (_zz2_norm > v2_normalizado.vetor[2]) _zz2_norm = _zz2_norm*0.999;
+            }
 
-            if (fabs(v2_normalizado.vetor[0] - _xx2_norm) < 0.05 && fabs(v2_normalizado.vetor[1] - _yy2_norm) < 0.05 && fabs(v2_normalizado.vetor[2] - _zz2_norm) < 0.05) {
+            if (fabs(v2_normalizado.vetor[0] - _xx2_norm) < 0.25 && fabs(v2_normalizado.vetor[1] - _yy2_norm) < 0.25 && fabs(v2_normalizado.vetor[2] - _zz2_norm) < 0.25) {
                step++;
             }
 
         }
 
-        //7? Passo destaca o vetor vermelho e amarelo e desenha um plano entre eles
+        // 7p Passo destaca o vetor vermelho e amarelo e desenha um plano entre eles
         if (step == 6) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
@@ -723,26 +760,16 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
             glPopMatrix();
 
-            //TENTATIVA DESENHAR PLANO 3
-            FILE *read;
-            read = fopen("outV2.txt", "r");
-            float a, b, c;
-
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &a ,&b, &c);
-            }
-            fclose(read);
+            // DESENHA O PLANO 2
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
-               glEnable(GL_BLEND);  // aqui tu habilita
+               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
                 glBegin(GL_QUADS);
-                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));
-                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));
-                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));
-                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);
+                    glVertex3f((_xx1_norm - _xx2_norm),(_yy1_norm - _yy2_norm), (_zz1_norm - _zz2_norm));
+                    glVertex3f((_xx1_norm + _xx2_norm) * (-1), (_yy1_norm + _yy2_norm)  * (-1), (_zz1_norm + _zz2_norm)  * (-1));
+                    glVertex3f((_xx1_norm - _xx2_norm) * (-1),(_yy1_norm - _yy2_norm) * (-1), (_zz1_norm - _zz2_norm) * (-1));
+                    glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
                 glEnd();
                 glDisable(GL_BLEND);
             glPopMatrix();
@@ -750,7 +777,7 @@ void drawScene(void) {
             step++;
         }
 
-        //8? Passo destaca o vetor azul e coloca na nova posicao
+        //8o Passo destaca o vetor azul e coloca na nova posicao
         if (step == 7) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -783,26 +810,16 @@ void drawScene(void) {
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
-            //TENTATIVA DESENHAR PLANO 3
-            FILE *read;
-            read = fopen("outV2.txt", "r");
-            float a, b, c;
-
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &a ,&b, &c);
-            }
-            fclose(read);
+            // DESENHA O PLANO 2
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
-               glEnable(GL_BLEND);  // aqui tu habilita
+               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
                 glBegin(GL_QUADS);
-                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));
-                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));
-                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));
-                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);
+                    glVertex3f((_xx1_norm - _xx2_norm),(_yy1_norm - _yy2_norm), (_zz1_norm - _zz2_norm));
+                    glVertex3f((_xx1_norm + _xx2_norm) * (-1), (_yy1_norm + _yy2_norm)  * (-1), (_zz1_norm + _zz2_norm)  * (-1));
+                    glVertex3f((_xx1_norm - _xx2_norm) * (-1),(_yy1_norm - _yy2_norm) * (-1), (_zz1_norm - _zz2_norm) * (-1));
+                    glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
                 glEnd();
                 glDisable(GL_BLEND);
             glPopMatrix();
@@ -818,7 +835,7 @@ void drawScene(void) {
             }
         }
 
-        //9? Rotaciona a camera, mantendo o destaque ao vetor azul
+        //9o Passo rotaciona a camera, mantendo o destaque ao vetor azul
 
         if (step == 8) {
             glPushMatrix();
@@ -852,47 +869,16 @@ void drawScene(void) {
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
-            //TENTATIVA DESENHAR PLANO 3
-            FILE *read;
-            read = fopen("outV2.txt", "r");
-            float a, b, c;
-
-            if(read == NULL){
-                printf("Houve um problema ao tentar abrir o arquivo!");
-            } else {
-                fscanf(read ,"%f %f %f", &a ,&b, &c);
-            }
-            fclose(read);
+            // DESENHA O PLANO 2
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f); // Aqui tu coloca a cor (RGB) e o ultimo parametro ? a opacidade, quanto menor, mais transparente e quanto maior, mais opaco... vai de 0.0 a 1.0
-               glBlendFunc(GL_SRC_ALPHA,GL_ONE); // aqui tu habilita
-               glEnable(GL_BLEND);  // aqui tu habilita
+               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
                 glBegin(GL_QUADS);
-                    glVertex3f(_xx1, _yy1, _zz1);
-                    glVertex3f( 0.0f, 0.0f, 0.0f);
-                    glVertex3f(a, b, c);
-                    glVertex3f(_xx1 + a, _yy1 + b, _zz1 + c);
-                glEnd();
-
-                glBegin(GL_QUADS);
-                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));
-                    glVertex3f( 0.0f, 0.0f, 0.0f);
-                    glVertex3f(a * (-1), b * (-1), c * (-1));
-                    glVertex3f((_xx1 + a) * (-1), (_yy1 + b)  * (-1), (_zz1 + c)  * (-1));
-                glEnd();
-
-                glBegin(GL_QUADS);
-                    glVertex3f(_xx1 * (-1), _yy1 * (-1), _zz1 * (-1));
-                    glVertex3f( 0.0f, 0.0f, 0.0f);
-                    glVertex3f(a, b, c);
-                    glVertex3f((_xx1 - a) * (-1),(_yy1 - b) * (-1), (_zz1 - c) * (-1));
-                glEnd();
-
-                glBegin(GL_QUADS);
-                    glVertex3f(_xx1, _yy1, _zz1);
-                    glVertex3f( 0.0f, 0.0f, 0.0f);
-                    glVertex3f(a * (-1), b * (-1), c * (-1));
-                    glVertex3f((_xx1 - a),(_yy1 - b), (_zz1 - c));
+                    glVertex3f((_xx1_norm - _xx2_norm),(_yy1_norm - _yy2_norm), (_zz1_norm - _zz2_norm));
+                    glVertex3f((_xx1_norm + _xx2_norm) * (-1), (_yy1_norm + _yy2_norm)  * (-1), (_zz1_norm + _zz2_norm)  * (-1));
+                    glVertex3f((_xx1_norm - _xx2_norm) * (-1),(_yy1_norm - _yy2_norm) * (-1), (_zz1_norm - _zz2_norm) * (-1));
+                    glVertex3f(_xx1_norm + _xx2_norm, _yy1_norm + _yy2_norm, _zz1_norm + _zz2_norm);
                 glEnd();
                 glDisable(GL_BLEND);
             glPopMatrix();
@@ -907,7 +893,7 @@ void drawScene(void) {
            }
         }
 
-        //10? Passo normaliza o vetor azul
+        //10o Passo normaliza o vetor azul
         if (step == 9) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
@@ -940,14 +926,24 @@ void drawScene(void) {
                 renderVector(x1, y1, z1, _xx3_norm, _yy3_norm, _zz3_norm, radius, 32, quadricFade3);
             glPopMatrix();
 
-            if (_xx3_norm < v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm + 0.001;
-            if (_xx3_norm > v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm - 0.001;
-            if (_yy3_norm < v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm + 0.001;
-            if (_yy3_norm > v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm - 0.001;
-            if (_zz3_norm < v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm + 0.001;
-            if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm - 0.001;
+            if (norma(novo_xx3, novo_yy3, novo_zz3) < norma(v3_normalizado.vetor[0], v3_normalizado.vetor[1], v3_normalizado.vetor[2])) {
+                if (_xx3_norm < v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm*1.001;
+                if (_xx3_norm > v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm/0.999;
+                if (_yy3_norm < v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm*1.001;
+                if (_yy3_norm > v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm/0.999;
+                if (_zz3_norm < v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm*1.001;
+                if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm/0.999;
+            }
+            else {
+                if (_xx3_norm < v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm/1.001;
+                if (_xx3_norm > v3_normalizado.vetor[0]) _xx3_norm = _xx3_norm*0.999;
+                if (_yy3_norm < v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm/1.001;
+                if (_yy3_norm > v3_normalizado.vetor[1]) _yy3_norm = _yy3_norm*0.999;
+                if (_zz3_norm < v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm/1.001;
+                if (_zz3_norm > v3_normalizado.vetor[2]) _zz3_norm = _zz3_norm*0.999;
+            }
 
-            if (fabs(v3_normalizado.vetor[0] - _xx3_norm) < 0.05 && fabs(v3_normalizado.vetor[1] - _yy3_norm) < 0.05 && fabs(v3_normalizado.vetor[2] - _zz3_norm) < 0.05) {
+            if (fabs(v3_normalizado.vetor[0] - _xx3_norm) < 0.25 && fabs(v3_normalizado.vetor[1] - _yy3_norm) < 0.25 && fabs(v3_normalizado.vetor[2] - _zz3_norm) < 0.25) {
                 sprintf(str1,"q1: (%.3f, %.3f, %.3f)", v1_normalizado.vetor[0]/2, v1_normalizado.vetor[1]/2, v1_normalizado.vetor[2]/2);
                 sprintf(str2,"q2: (%.3f, %.3f, %.3f)", v2_normalizado.vetor[0]/2, v2_normalizado.vetor[1]/2, v2_normalizado.vetor[2]/2);
                 sprintf(str3,"q3: (%.3f, %.3f, %.3f)", v3_normalizado.vetor[0]/2, v3_normalizado.vetor[1]/2, v3_normalizado.vetor[2]/2);
@@ -956,14 +952,14 @@ void drawScene(void) {
 
         }
 
-        //11? Passo desenha todos os vetores em destaque
+        //11o Passo desenha todos os vetores em destaque
         if (step == 10) {
             glPushMatrix();
                 glColor3f(1.0, 0.4, 0.2); // Vermelho
                 GLUquadricObj *quadric=gluNewQuadric();
                 gluQuadricNormals(quadric, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
-                output(-8.0, 6.0, str1);
+                output(-5.5, 6.0, str1);
             glPopMatrix();
 
             glPushMatrix();
@@ -971,7 +967,7 @@ void drawScene(void) {
                 GLUquadricObj *quadric2=gluNewQuadric();
                 gluQuadricNormals(quadric2, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx2_norm, _yy2_norm, _zz2_norm, radius, 32, quadric2);
-                output(-8.0, 5.0, str2);
+                output(-5.5, 5.2, str2);
             glPopMatrix();
 
             glPushMatrix();
@@ -979,23 +975,60 @@ void drawScene(void) {
                 GLUquadricObj *quadricFade3=gluNewQuadric();
                 gluQuadricNormals(quadricFade3, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx3_norm, _yy3_norm, _zz3_norm, radius, 32, quadricFade3);
-                output(-8.0, 4.0, str3);
+                output(-5.5, 4.4, str3);
             glPopMatrix();
         }
 
         glutPostRedisplay();
     }
-    // Flush the pipeline, swap the buffers
+    // Limpa o pipeline, troca o buffer
     glFlush();
     glutSwapBuffers();
 
 }
 
-// Initialize OpenGL's rendering modes
+void drawSceneError(void) {
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; // Cor(0.2, 0.2, 0.2)
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+
+    // Rotaciona a imagem
+    glMatrixMode(GL_MODELVIEW); // Matriz atual afeta a posicao dos objetos
+    glLoadIdentity(); // Inicializa para a identidade
+
+    // Zoom da camera
+    glScalef(rotate_x, rotate_x, 1.0f);
+    //glScalef(1.0f, 1.0f, rotate_x);
+    glRotatef(rotate_by_key, -1.0f, 1.5f, -5.0f);
+
+    glTranslatef(0.0, -0.3, -35.0); // Translada a partir da origem (em frente ao espectador)
+    glRotatef(RotateAngle, 0.0, 1.0, 0.0); // Rotaciona ao redor do eixo y
+    glRotatef(Azimuth, 1.0, 0.0, 0.0); // Define o angulo azimuth (distancia angular medida sobre o horizonte)
+    glDisable(GL_CULL_FACE);
+
+    glPushMatrix();
+        glColor3f(1.0f, 1.0f, 1.0f);
+    	output(-2.7, 1.0, "Algoritmo de Gram-Schmidt");
+        glColor3f(0.6f, 0.6f, 0.6f);
+    	output(-6.5, -1.5, "Os vetores escolhidos para serem analizados nao sao LI...");
+    	output(-6.5, -2, "Favor altera-los por vetores LI e executar novamente o programa...");
+    glPopMatrix();
+
+    glutPostRedisplay();
+
+    // Limpa o pipeline, troca o buffer
+    glFlush();
+    glutSwapBuffers();
+
+}
+
+// Inicializa os modos de renderizacao do OpenGL
 void initRendering() {
-    glEnable(GL_DEPTH_TEST); // Depth testing must be turned on
+    glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Just show wireframes at first
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
     GLfloat LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -1028,16 +1061,16 @@ void menu(int item) {
     glutPostRedisplay();
     return;
 }
-// Called when the window is resized
-// w, h - width and height of the window in pixels.
+// Chamada quando a janela é redimensionada
+// w, h - largura e altura da janela em pixels.
 void resizeWindow(int w, int h) {
     double aspectRatio;
-    // Define the portion of the window used for OpenGL rendering.
-    glViewport(0, 0, w, h); // View port uses whole window
-    // Set up the projection view matrix: perspective projection
-    // Determine the min and max values for x and y that should appear in the window.
-    // The complication is that the aspect ratio of the window may not match the
-    // aspect ratio of the scene we want to view.
+    // Define a porcao da janela usada para renderizacao do OpenGL.
+    glViewport(0, 0, w, h); // View port usa toda a janela
+    // Define a matriz de projecao: projecao perspectiva
+    // Determina os valores min e max para x e y que devem aparecer na janela.
+    // A complicacao é que a relacao de aspecto da janela pode nao corresponder a
+    // relacao de aspecto da scena que queremos ver.
     w = (w == 0) ? 1 : w;
     h = (h == 0) ? 1 : h;
     aspectRatio = (double)w / (double)h;
@@ -1046,7 +1079,7 @@ void resizeWindow(int w, int h) {
     gluPerspective(15.0, aspectRatio, 25.0, 45.0);
 }
 
-//TODO Adicionar as valida??es aqui para n?o poluir o c?digo
+//TODO Adicionar as validacoes aqui para nao poluir o codigo
 void readParameters(){
     int i = 1;
     float x, y, z;
@@ -1082,9 +1115,9 @@ void readParameters(){
 }
 
 void executaGramSchimidt(){
-    //Adicionar valida??es:
-    //Entrada nula
-    //Vetores com valores inv?lidos ou muito divergentes
+    // Adicionar validacoes:
+    // Entrada nula
+    // Vetores com valores invalidos ou muito divergentes
     readParameters();
 
     Vetor vetor1, vetor2, vetor3;
@@ -1095,14 +1128,10 @@ void executaGramSchimidt(){
 
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
 
-
-    //TODO Reduzir o tamanho dos vetores para 2 para ficar interessante na anima??o
-
 }
 
 
-// glutKeyboardFunc is called below to set this function to handle
-// all "normal" key presses.
+// Cuida das chamadas via teclado
 void myKeyboardFunc(unsigned char key, int x, int y) {
     switch (key) {
         case 'R':
@@ -1134,9 +1163,7 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
     }
 }
 
-// glutSpecialFunc is called below to set this function to handle
-// all "special" key presses. See glut.h for the names of
-// special keys.
+// Setas do teclado para rotacionar a camera
 void mySpecialKeyFunc(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
@@ -1163,76 +1190,83 @@ void mySpecialKeyFunc(int key, int x, int y) {
             RotateAngle += 360.0f;
         }
         break;
-        case GLUT_KEY_F9:
-             executaGramSchimidt();
-        break;
     }
 
     glutPostRedisplay();
 }
-
     Vetor vetor1, vetor2, vetor3;
-// Main routine
-// Set up OpenGL, define the callbacks and start the main loop
+
+// Main
+// Executa o Gram-Schmidt e em seguida a animacao
 int main(int argc, char** argv) {
 
     readParameters();
-
-
 
     vetor1.inicializaVetor(_xx1, _yy1, _zz1);
     vetor2.inicializaVetor(_xx2, _yy2, _zz2);
     vetor3.inicializaVetor(_xx3, _yy3, _zz3);
 
+    if(gauss(vetor1,vetor2,vetor3) != true){
+        glutInit(&argc, argv);
+        // Buffer duplo
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+        // Posicao da janela
+        glutInitWindowPosition(200, 45);
+        // Tamanho da Janela
+        glutInitWindowSize(900, 660);
+        // Titulo da Janela
+        glutCreateWindow("Gram Schmidt");
+    
+        // Inicializa o OpenGL
+        initRendering();
+        // Define as funcoes para chamadas do teclado
+        glutKeyboardFunc(myKeyboardFunc); // Cuida de simbolos ascii "normais"
+        glutSpecialFunc(mySpecialKeyFunc); // Cuida de teclas "especial"
+        // Define o callback para redimensionamento da janela
+        glutReshapeFunc(resizeWindow);
+        
+        glutDisplayFunc(drawSceneError);
+        glutMainLoop();
+    
+        return(0);
+    }
+
     inicializacaoGramSchimidt(vetor1, vetor2, vetor3);
 
-
-    //Imprimi os par?metros dos vetores
-    /*
-    FILE *saida;
-    saida = fopen("out.txt", "w");
-    if(saida != NULL){
-        fprintf(saida, "%f %f %f %f %f %f %f %f %f", _xx1, _yy1, _zz1, _xx2, _yy2, _zz2, _xx3, _yy3, _zz3);
-    }
-    fclose(saida);
-    */
-
     glutInit(&argc, argv);
-    // We're going to animate it, so double buffer
+    // Buffer duplo
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    // Window position (from top corner), and size (width% and hight)
-    glutInitWindowPosition(200, 60);
+    // Posicao da janela
+    glutInitWindowPosition(200, 45);
     // Tamanho da Janela
-    glutInitWindowSize(800, 600);
-    // T?tulo da Janela
+    glutInitWindowSize(900, 660);
+    // Titulo da Janela
     glutCreateWindow("Gram Schmidt");
 
-    // Criar menu acess?vel atrav?s do bot?o direito do mouse
-    int menuRightButton = glutCreateMenu(menu);
-    glutAddMenuEntry("Visualizar Informa??es", 1);
-    glutAddMenuEntry("Iniciar Anima??o", 2);
-    glutAddMenuEntry("Fechar Aplica??o", 3);
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
+    // Criar menu acessivel atraves do botao direito do mouse
+    //int menuRightButton = glutCreateMenu(menu);
+    //glutAddMenuEntry("Visualizar Informacoes", 1);
+    //glutAddMenuEntry("Iniciar Animacao", 2);
+    //glutAddMenuEntry("Fechar Aplicacao", 3);
+    //glutAttachMenu(GLUT_RIGHT_BUTTON);
 
-    // Initialize OpenGL as we like it..
+    // Inicializa o OpenGL
     initRendering();
-    // Set up callback functions for key presses
-    glutKeyboardFunc(myKeyboardFunc); // Handles "normal" ascii symbols
-    glutSpecialFunc(mySpecialKeyFunc); // Handles "special" keyboard keys
-    // Set up the callback function for resizing windows
+    // Define as funcoes para chamadas do teclado
+    glutKeyboardFunc(myKeyboardFunc); // Cuida de simbolos ascii "normais"
+    glutSpecialFunc(mySpecialKeyFunc); // Cuida de teclas "especial"
+    // Define o callback para redimensionamento da janela
     glutReshapeFunc(resizeWindow);
-    // Call this for background processing
+    // Chamar para processamento em background
     // glutIdleFunc( myIdleFunction );
-    // call this whenever window needs redrawing
 
     glutDisplayFunc(drawScene);
 
-
-    fprintf(stdout, "Use as setas no teclado para rotacioanr.n");
-    fprintf(stdout, "Aperte \"w\" para ativar o modo solido.n");
-    fprintf(stdout, "Aperte \"R\" ou \"r\" para aumentar ou diminuir a taxa de velocidade.n");
-    // Start the main loop. glutMainLoop never returns.
+    // Inicia o loop principal. glutMainLoop nunca retorna.
     glutMainLoop();
 
-    return(0); // This line is never reached.
+    return(0); // Essa linha nunca é chamada.
 }
+
+
+
