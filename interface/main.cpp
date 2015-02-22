@@ -318,6 +318,11 @@ double _xx1_norm, _yy1_norm, _zz1_norm;
 double _xx2_norm, _yy2_norm, _zz2_norm;
 double _xx3_norm, _yy3_norm, _zz3_norm;
 
+// Linha pontilhada origem/destino
+double pont_o_xx1, pont_o_yy1, pont_o_zz1;
+double pont_d_xx1, pont_d_yy1, pont_d_zz1;
+int pontilhado_flag = 0;
+
 // Flag para a Splash Screen
 int splash_flag = 1;
 
@@ -402,7 +407,7 @@ void drawScene(void) {
         float radius = 0.03+(sin(t)/2+0.5)/5;
 
         //Chamada da funcao que desenha os eixos x,y,z
-        if (step < 10) drawAxis();
+        if (step < 11) drawAxis();
 
         if (step < 1) {
             //Desenha o Vetor de (x1, y1, z1) a (x2, y2, z2)
@@ -449,31 +454,35 @@ void drawScene(void) {
         if (step == 0) {
            RotateAngle = RotateAngle + 0.15f;
            if (RotateAngle > 40.0f) {
-                _xx1_norm = _xx1;
-                _yy1_norm = _yy1;
-                _zz1_norm = _zz1;
+               _xx1_norm = _xx1;
+               _yy1_norm = _yy1;
+               _zz1_norm = _zz1;
 
-                _xx2_norm = _xx2;
-                _yy2_norm = _yy2;
-                _zz2_norm = _zz2;
+               _xx2_norm = _xx2;
+               _yy2_norm = _yy2;
+               _zz2_norm = _zz2;
 
-                _xx3_norm = _xx3;
-                _yy3_norm = _yy3;
-                _zz3_norm = _zz3;
+               _xx3_norm = _xx3;
+               _yy3_norm = _yy3;
+               _zz3_norm = _zz3;
+
+               // Pontilhado
+               pont_o_xx1 = _xx1;
+               pont_o_yy1 = _yy1;
+               pont_o_zz1 = _zz1;
 
                step++;
            }
         }
 
-        // Normalizacao
-        Vetor v1_normalizado, v2_normalizado, v3_normalizado;
-        v1_normalizado = normalizaVetor(_xx1, _yy1, _zz1);
-        v2_normalizado = normalizaVetor(novo_xx2, novo_yy2, novo_zz2);
-        v3_normalizado = normalizaVetor(novo_xx3, novo_yy3, novo_zz3);
-
-
-        //2o Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
         if (step == 1) {
+            glPushMatrix();
+                glColor3f(1.0, 0.4, 0.2); // Vermelho
+                GLUquadricObj *quadric=gluNewQuadric();
+                gluQuadricNormals(quadric, GLU_SMOOTH);
+                renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
+            glPopMatrix();
+
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
@@ -498,12 +507,107 @@ void drawScene(void) {
                 glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
+            glLineWidth(1.5); 
+            glColor3f(1.0, 1.0, 1.0);
+            glLineStipple(2, 0xAAAA);
+            glEnable(GL_LINE_STIPPLE);
+            glBegin(GL_LINES);
+                glVertex3f(pont_o_xx1, pont_o_yy1, pont_o_zz1);
+                glVertex3f(novo_xx2, b, novo_zz2);
+            glEnd();
+            glDisable(GL_LINE_STIPPLE);
+
+            if (b < novo_yy2) b = b + 0.005;
+            if (b > novo_yy2) b = b - 0.005;
+
+            if (fabs(b - novo_yy2) < 0.005) {
+                // DESENHA O PLANO 1
+                glPushMatrix();
+                   glColor4f(1.0, 0.4, 0.2, 0.4f);
+                   glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+                   glEnable(GL_BLEND);
+    
+                    glBegin(GL_QUADS);
+                        glVertex3f((novo_xx3 - novo_xx2) * 2,(novo_yy3 - novo_yy2) * 2, (novo_zz3 - novo_zz2) * 2);
+                        glVertex3f((novo_xx3 + novo_xx2) * (-1) * 2, (novo_yy3 + novo_yy2)  * (-1) * 2, (novo_zz3 + novo_zz2)  * (-1) * 2);
+                        glVertex3f((novo_xx3 - novo_xx2) * (-1) * 2,(novo_yy3 - novo_yy2) * (-1) * 2, (novo_zz3 - novo_zz2) * (-1) * 2);
+                        glVertex3f(novo_xx3 + novo_xx2 * 2, novo_yy3 + novo_yy2 * 2, novo_zz3 + novo_zz2 * 2);
+                    glEnd();
+    
+                    glDisable(GL_BLEND);
+                glPopMatrix();
+                step++;
+            }
+        }
+
+        // Normalizacao
+        Vetor v1_normalizado, v2_normalizado, v3_normalizado;
+        v1_normalizado = normalizaVetor(_xx1, _yy1, _zz1);
+        v2_normalizado = normalizaVetor(novo_xx2, novo_yy2, novo_zz2);
+        v3_normalizado = normalizaVetor(novo_xx3, novo_yy3, novo_zz3);
+
+
+        //3o Passo deixa os vetores com opacidade baixa e normaliza o vetor v1, colocando em destaque
+        if (step == 2) {
+            // Para um melhor efeito na animacao
+            if (pontilhado_flag < 20) {
+                glLineWidth(1.5); 
+                glColor3f(1.0, 1.0, 1.0);
+                glLineStipple(2, 0xAAAA);
+                glEnable(GL_LINE_STIPPLE);
+                glBegin(GL_LINES);
+                    glVertex3f(pont_o_xx1, pont_o_yy1, pont_o_zz1);
+                    glVertex3f(novo_xx2, b, novo_zz2);
+                glEnd();
+                glDisable(GL_LINE_STIPPLE);
+                pontilhado_flag++;
+            }
 
             glPushMatrix();
                 glColor3f(1.0, 0.4, 0.2); // Vermelho
                 GLUquadricObj *quadric=gluNewQuadric();
                 gluQuadricNormals(quadric, GLU_SMOOTH);
                 renderVector(x1, y1, z1, _xx1_norm, _yy1_norm, _zz1_norm, radius, 32, quadric);
+            glPopMatrix();
+
+            glPushMatrix();
+                glDisable(GL_DEPTH_TEST);
+                glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
+                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+                glEnable(GL_BLEND);
+                GLUquadricObj *quadricFade2=gluNewQuadric();
+                gluQuadricNormals(quadricFade2, GLU_SMOOTH);
+                renderVector(x1, y1, z1, _xx2, _yy2, _zz2, radius, 32, quadricFade2);
+                glDisable(GL_BLEND);
+                glEnable(GL_DEPTH_TEST);
+            glPopMatrix();
+
+            glPushMatrix();
+                glDisable(GL_DEPTH_TEST);
+                glColor4f(0.0, 0.2, 0.7, 0.3f); // Azul
+                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+                glEnable(GL_BLEND);
+                GLUquadricObj *quadricFade3=gluNewQuadric();
+                gluQuadricNormals(quadricFade3, GLU_SMOOTH);
+                renderVector(x1, y1, z1, _xx3, _yy3, _zz3, radius, 32, quadricFade3);
+                glDisable(GL_BLEND);
+                glEnable(GL_DEPTH_TEST);
+            glPopMatrix();
+
+            // DESENHA O PLANO 1
+            glPushMatrix();
+               glColor4f(1.0, 0.4, 0.2, 0.4f);
+               glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+               glEnable(GL_BLEND);
+
+                glBegin(GL_QUADS);
+                    glVertex3f((novo_xx3 - novo_xx2) * 2,(novo_yy3 - novo_yy2) * 2, (novo_zz3 - novo_zz2) * 2);
+                    glVertex3f((novo_xx3 + novo_xx2) * (-1) * 2, (novo_yy3 + novo_yy2)  * (-1) * 2, (novo_zz3 + novo_zz2)  * (-1) * 2);
+                    glVertex3f((novo_xx3 - novo_xx2) * (-1) * 2,(novo_yy3 - novo_yy2) * (-1) * 2, (novo_zz3 - novo_zz2) * (-1) * 2);
+                    glVertex3f(novo_xx3 + novo_xx2 * 2, novo_yy3 + novo_yy2 * 2, novo_zz3 + novo_zz2 * 2);
+                glEnd();
+
+                glDisable(GL_BLEND);
             glPopMatrix();
 
             if (norma(_xx1, _yy1, _zz1) < norma(v1_normalizado.vetor[0], v1_normalizado.vetor[1], v1_normalizado.vetor[2])) {
@@ -529,8 +633,8 @@ void drawScene(void) {
 
         }
 
-        //3o Passo desenha os vetores e o primeiro plano destacando o vetor vermelho
-        if (step == 2) {
+        //4o Passo desenha os vetores e o primeiro plano destacando o vetor vermelho
+        if (step == 3) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
@@ -564,7 +668,7 @@ void drawScene(void) {
 
             // DESENHA O PLANO 1
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glColor4f(1.0, 0.4, 0.2, 0.4f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
 
@@ -581,8 +685,8 @@ void drawScene(void) {
             step++;
         }
 
-        //4o Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
-        if (step == 3) {
+        //5o Passo desenha o plano e atualiza o vetor amarelo (destaque para os vetores vermelho e amarelo)
+        if (step == 4) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
                 GLUquadricObj *quadric2=gluNewQuadric();
@@ -611,7 +715,7 @@ void drawScene(void) {
 
             // DESENHA O PLANO 1
             glPushMatrix();
-               glColor4f(1.0, 1.0, 1.0, 0.4f);
+               glColor4f(1.0, 0.4, 0.2, 0.4f);
                glBlendFunc(GL_SRC_ALPHA,GL_ONE);
                glEnable(GL_BLEND);
 
@@ -636,12 +740,12 @@ void drawScene(void) {
               _xx2_norm = novo_xx2;
               _yy2_norm = novo_yy2;
               _zz2_norm = novo_zz2;
-              Sleep(1000);
+              Sleep(500);
            }
         }
 
-        // 5o Passo remove o plano e destaca apenas o vetor amarelo
-        if (step == 4) {
+        // 6o Passo remove o plano e destaca apenas o vetor amarelo
+        if (step == 5) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
                 GLUquadricObj *quadric2=gluNewQuadric();
@@ -676,8 +780,8 @@ void drawScene(void) {
             step++;
         }
 
-        // 6o Passo normaliza o vetor amarelo
-        if (step == 5) {
+        // 7o Passo normaliza o vetor amarelo
+        if (step == 6) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
                 GLUquadricObj *quadric2=gluNewQuadric();
@@ -732,8 +836,8 @@ void drawScene(void) {
 
         }
 
-        // 7p Passo destaca o vetor vermelho e amarelo e desenha um plano entre eles
-        if (step == 6) {
+        // 8o Passo destaca o vetor vermelho e amarelo e desenha um plano entre eles
+        if (step == 7) {
             glPushMatrix();
                 glColor3f(1.0, 1.0, 0.2); // Amarelo
                 GLUquadricObj *quadric2=gluNewQuadric();
@@ -777,8 +881,8 @@ void drawScene(void) {
             step++;
         }
 
-        //8o Passo destaca o vetor azul e coloca na nova posicao
-        if (step == 7) {
+        // 9o Passo destaca o vetor azul e coloca na nova posicao
+        if (step == 8) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
@@ -835,9 +939,9 @@ void drawScene(void) {
             }
         }
 
-        //9o Passo rotaciona a camera, mantendo o destaque ao vetor azul
+        // 10o Passo rotaciona a camera, mantendo o destaque ao vetor azul
 
-        if (step == 8) {
+        if (step == 9) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 1.0, 0.2, 0.3f); // Amarelo
@@ -893,8 +997,8 @@ void drawScene(void) {
            }
         }
 
-        //10o Passo normaliza o vetor azul
-        if (step == 9) {
+        // 11o Passo normaliza o vetor azul
+        if (step == 10) {
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 0.4, 0.2, 0.3f); // Vermelho
@@ -952,8 +1056,8 @@ void drawScene(void) {
 
         }
 
-        //11o Passo desenha todos os vetores em destaque
-        if (step == 10) {
+        // 12o Passo desenha todos os vetores em destaque
+        if (step == 11) {
             glPushMatrix();
                 glColor3f(1.0, 0.4, 0.2); // Vermelho
                 GLUquadricObj *quadric=gluNewQuadric();
