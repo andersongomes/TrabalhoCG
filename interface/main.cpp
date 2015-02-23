@@ -237,6 +237,15 @@ void output(float x, float y, char *string) {
   }
 }
 
+void output_small(float x, float y, char *string) {
+  int len, i;
+  glRasterPos2f(x, y);
+  len = (int) strlen(string);
+  for (i = 0; i < len; i++) {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
+  }
+}
+
 // Desenha os eixos coordenados (x, y, z)
 void drawAxis(void) {
     glPushMatrix();
@@ -311,6 +320,11 @@ char *str3 = new char[30];
 char *V1 = new char[30];
 char *V2 = new char[30];
 char *V3 = new char[30];
+char *saida_1 = new char[30];
+char *saida_2 = new char[30];
+char *saida_3 = new char[30];
+char *saida_4 = new char[30];
+
 /*
 * drawScene() cuida da animacao, desenho e redesenho do conteudo grafico
 */
@@ -636,6 +650,14 @@ void drawScene(void) {
                step++;
             }
 
+            glColor3f(1.0, 0.4, 0.2); // Vermelho
+            saida_1 = "V1";
+            saida_2 = "q1 = _____";
+            saida_3 = "||V1||";
+            output(-7.45, -4.05, saida_1);
+            output(-8.5, -4.0, saida_2);
+            output(-7.6, -4.5, saida_3);
+
         }
 
         //4o Passo desenha os vetores e o primeiro plano destacando o vetor vermelho
@@ -752,6 +774,16 @@ void drawScene(void) {
               _yy2_norm = novo_yy2;
               _zz2_norm = novo_zz2;
            }
+
+            glColor3f(1.0, 1.0, 0.2); // Amarelo
+            saida_1 = "w2 = V2 - proj";
+            saida_2 = "span{q1}";
+            saida_3 = "V2";
+            saida_4 = "= V2 - <V2, q1>q1";
+            output(-8.5, -4.0, saida_1);
+            output_small(-6.1, -4.25, saida_2);
+            output(-5.0, -4.37, saida_3);
+            output(-7.95, -4.6, saida_4);
         }
 
         // 6o Passo remove o plano e destaca apenas o vetor amarelo
@@ -850,6 +882,14 @@ void drawScene(void) {
             if (fabs(v2_normalizado.vetor[0] - _xx2_norm) < 0.25 && fabs(v2_normalizado.vetor[1] - _yy2_norm) < 0.25 && fabs(v2_normalizado.vetor[2] - _zz2_norm) < 0.25) {
                step++;
             }
+
+            glColor3f(1.0, 1.0, 0.2); // Amarelo
+            saida_1 = "w2";
+            saida_2 = "q2 = _____";
+            saida_3 = "||w2||";
+            output(-7.45, -4.05, saida_1);
+            output(-8.5, -4.0, saida_2);
+            output(-7.6, -4.5, saida_3);
 
         }
 
@@ -961,11 +1001,27 @@ void drawScene(void) {
             if (fabs(_xx3 - novo_xx3) < 0.05 && fabs(_yy3 - novo_yy3) < 0.05 && fabs(_zz3 - novo_zz3) < 0.05) {
                 step++;
             }
+
+            glColor3f(0.0, 0.2, 0.7); // Azul
+            saida_1 = "w3 = V3 - proj";
+            saida_2 = "span{q1,q2}";
+            saida_3 = "V3";
+            saida_4 = "= V3 - <V3, q1>q1 - <v3, q2>q2";
+            output(-8.5, -4.0, saida_1);
+            output_small(-6.1, -4.25, saida_2);
+            output(-4.65, -4.37, saida_3);
+            output(-7.95, -4.6, saida_4);
+
         }
 
         // 10o Passo rotaciona a camera, mantendo o destaque ao vetor azul
 
         if (step == 9) {
+            if (sleep_flag == 1) {
+                Sleep(ESPERA);
+                sleep_flag++;
+            }
+
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 0.4, 0.2, 0.3f); // Vermelho
@@ -1023,6 +1079,8 @@ void drawScene(void) {
 
         // 11o Passo normaliza o vetor azul
         if (step == 10) {
+            sleep_flag = 0;
+
             glPushMatrix();
                 glDisable(GL_DEPTH_TEST);
                 glColor4f(1.0, 0.4, 0.2, 0.3f); // Vermelho
@@ -1078,10 +1136,23 @@ void drawScene(void) {
                 step++;
             }
 
+            glColor3f(0.0, 0.2, 0.7); // Azul
+            saida_1 = "q3";
+            saida_2 = "w3 = _____";
+            saida_3 = "||w3||";
+            output(-5.45, -3.60, saida_1);
+            output(-8.5, -4.0, saida_2);
+            output(-5.7, -4.3, saida_3);
+
         }
 
         // 12o Passo desenha todos os vetores em destaque
         if (step == 11) {
+            if (sleep_flag == 0) {
+                Sleep(ESPERA - 400);
+                sleep_flag++;
+            }
+
             glPushMatrix();
                 glColor3f(1.0, 0.4, 0.2); // Vermelho
                 GLUquadricObj *quadric=gluNewQuadric();
