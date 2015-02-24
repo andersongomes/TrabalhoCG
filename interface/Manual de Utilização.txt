@@ -1,0 +1,8 @@
+Funcionalidades
+b - Diminui o zoom
+g - Aumenta o zoom
+p - Pausa e despausa a execução do programa
+Seta para esquerda - Move a visualização no sentido anti-horário 
+Seta para direita - Move a visualização no sentido horário
+Seta para cima - Altera a visualização movimentando de baixo para cima
+Seta para baixo - Altera a visualização movimentando de cima para baixo

@@ -1,0 +1,20 @@
+﻿Exemplo 1
+1 1 1
+0 1 1
+1 2 3
+Exemplo 2
+2 4 4
+2 2 6
+4 2 2
+Exemplo 3 (Vetores Não LI)
+2 2 2
+2 4 4
+4 2 2
+Exemplo 4 (Vetor fica Maior)
+2 2 3
+2 4 6
+4 2 2
+Exemplo 5
+Exemplo 6
+Exemplo 7
+Exemplo 8
